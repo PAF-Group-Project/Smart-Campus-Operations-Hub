@@ -9,11 +9,10 @@ spring:
       client:
         registration:
           google:
-            client-id: "${GOOGLE_CLIENT_ID:833598228067-7tpan0n3uqpl0ar0kg339oj147l5mmjh.apps.googleusercontent.com}"
-            client-secret: "${GOOGLE_CLIENT_SECRET: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}"
-            scope:
-              - email
-              - profile
+            client-id: ${GOOGLE_CLIENT_ID:833598228067-7tpan0n3uqpl0ar0kg339oj147l5mmjh.apps.googleusercontent.com}
+            client-secret: ${GOOGLE_CLIENT_SECRET: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}
+            scope: email,profile
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
 
 server:
   port: 8080

@@ -30,6 +30,7 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .cors(Customizer.withDefaults())
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/", "/error", "/favicon.ico").permitAll()
                 .requestMatchers("/api/v1/auth/me").authenticated()
                 .requestMatchers("/api/v1/auth/**", "/public/**", "/login/**", "/oauth2/**").permitAll()
                 .anyRequest().authenticated()
@@ -37,6 +38,7 @@ public class SecurityConfig {
             .oauth2Login(oauth2 -> oauth2
                 .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
                 .defaultSuccessUrl("http://localhost:5173/", true)
+                .failureUrl("http://localhost:5173/login?error=oauth2")
             )
             .logout(logout -> logout
                 .logoutUrl("/api/v1/auth/logout")
