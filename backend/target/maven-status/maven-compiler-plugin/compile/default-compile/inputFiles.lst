@@ -4,6 +4,7 @@ C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\co
 C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\notification\NotificationController.java
 C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\user\User.java
 C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\notification\Notification.java
+C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\user\UserRepository.java
 C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\exception\ResourceNotFoundException.java
 C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\exception\GlobalExceptionHandler.java
 C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\resource\Resource.java
@@ -13,6 +14,8 @@ C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\co
 C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\resource\ResourceController.java
 C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\resource\ResourceRepository.java
 C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\resource\ResourceService.java
+C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\user\AuthController.java
 C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\booking\BookingController.java
+C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\config\CustomOAuth2UserService.java
 C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\config\SecurityConfig.java
 C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\ticket\TicketController.java
