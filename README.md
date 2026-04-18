@@ -4,3 +4,4 @@ Module A – Facilities & Assets Catalogue
 • Each resource must have key metadata (type, capacity, location, availability windows, and status
 such as ACTIVE / OUT_OF_SERVICE).
 • Support search and filtering (e.g., by type, capacity, and location).
+.........
