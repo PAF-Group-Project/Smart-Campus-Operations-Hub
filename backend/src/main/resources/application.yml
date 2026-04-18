@@ -3,7 +3,7 @@ spring:
     name: smartcampus
   data:
     mongodb:
-      uri: ${MONGO_URI:mongodb://localhost:27017/smartcampus}
+      uri: ${MONGO_URI:mongodb+srv://pafmongodb_db_user:BhA6GLc4vFUKdIQ6@cluster0.rm0kl5u.mongodb.net/smartcampus?retryWrites=true&w=majority&appName=Cluster0}
   security:
     oauth2:
       client:
