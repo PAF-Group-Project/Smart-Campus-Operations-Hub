@@ -1,5 +1,6 @@
 package com.groupxx.smartcampus.config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -18,7 +19,10 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final CustomOAuth2UserService customOAuth2UserService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -26,15 +30,19 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .cors(Customizer.withDefaults())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/v1/auth/**", "/public/**").permitAll()
+                .requestMatchers("/api/v1/auth/me").authenticated()
+                .requestMatchers("/api/v1/auth/**", "/public/**", "/login/**", "/oauth2/**").permitAll()
                 .anyRequest().authenticated()
             )
             .oauth2Login(oauth2 -> oauth2
-                .defaultSuccessUrl("/dashboard", true)
+                .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+                .defaultSuccessUrl("http://localhost:5173/", true)
             )
             .logout(logout -> logout
                 .logoutUrl("/api/v1/auth/logout")
-                .logoutSuccessUrl("/")
+                .logoutSuccessUrl("http://localhost:5173/login")
+                .deleteCookies("JSESSIONID")
+                .invalidateHttpSession(true)
             );
 
         return http.build();
