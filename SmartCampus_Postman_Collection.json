@@ -1,0 +1,185 @@
+{
+  "info": {
+    "name": "Smart Campus Booking App API",
+    "description": "Postman Collection for PAF Module B - Booking Management REST API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get Mocked Resources",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8082/api/resources",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8082",
+          "path": [
+            "api",
+            "resources"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Create a Booking",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "x-user-id",
+            "value": "USR-101",
+            "type": "text"
+          },
+          {
+            "key": "x-user-email",
+            "value": "postman@test.com",
+            "type": "text"
+          },
+          {
+            "key": "x-user-name",
+            "value": "Postman User",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"resourceId\": \"RES-001\",\n  \"date\": \"2026-05-10\",\n  \"startTime\": \"09:00\",\n  \"endTime\": \"11:00\",\n  \"purpose\": \"Project Presentation via Postman\",\n  \"expectedAttendees\": 10\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8082/api/bookings",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8082",
+          "path": [
+            "api",
+            "bookings"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get My Bookings",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "x-user-id",
+            "value": "USR-101",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8082/api/bookings/my",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8082",
+          "path": [
+            "api",
+            "bookings",
+            "my"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get All Bookings (Admin)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "x-user-role",
+            "value": "ADMIN",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8082/api/bookings",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8082",
+          "path": [
+            "api",
+            "bookings"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Update Status (Approve/Reject)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "x-user-role",
+            "value": "ADMIN",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"APPROVED\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8082/api/bookings/REPLACE_WITH_ID/status",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8082",
+          "path": [
+            "api",
+            "bookings",
+            "REPLACE_WITH_ID",
+            "status"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Delete Booking",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "x-user-id",
+            "value": "USR-101",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8082/api/bookings/REPLACE_WITH_ID",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8082",
+          "path": [
+            "api",
+            "bookings",
+            "REPLACE_WITH_ID"
+          ]
+        }
+      }
+    }
+  ]
+}
