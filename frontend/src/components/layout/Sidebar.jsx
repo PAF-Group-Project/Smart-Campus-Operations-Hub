@@ -1,23 +1,23 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { 
-  BarChart2, 
-  Calendar, 
-  Box, 
-  Ticket, 
-  Bell, 
+import {
+  BarChart2,
+  Calendar,
+  Box,
+  Ticket,
+  Bell,
   Settings,
-  Users,
-  ShieldCheck,
-  Briefcase
+  Users
 } from 'lucide-react';
 
 const Sidebar = () => {
   const navItems = [
     { name: 'Dashboard', path: '/dashboard', icon: BarChart2 },
-    { name: 'Student Portal', path: '/student/tickets', icon: Ticket },
-    { name: 'Admin Control', path: '/admin/tickets', icon: ShieldCheck },
-    { name: 'Tech Queue', path: '/technician/tickets', icon: Briefcase },
+    { name: 'Facilities', path: '/facilities', icon: Box },
+    { name: 'Bookings', path: '/bookings', icon: Calendar },
+    { name: 'Tickets', path: '/tickets', icon: Ticket },
+    { name: 'Notifications', path: '/notifications', icon: Bell },
+    { name: 'Users', path: '/users', icon: Users, role: 'ADMIN' },
   ];
 
   return (
@@ -25,17 +25,16 @@ const Sidebar = () => {
       <div className="p-6 border-b border-slate-200">
         <h1 className="text-xl font-bold text-primary-900">Campus Hub</h1>
       </div>
-      
+
       <nav className="flex-1 p-4 space-y-1">
         {navItems.map((item) => (
           <NavLink
             key={item.path}
             to={item.path}
-            className={({ isActive }) => 
-              `flex items-center space-x-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                isActive 
-                  ? 'bg-primary-50 text-primary-700' 
-                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+            className={({ isActive }) =>
+              `flex items-center space-x-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${isActive
+                ? 'bg-primary-50 text-primary-700'
+                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
               }`
             }
           >
