@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Search, Filter } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { getAllResources, createResource } from '../../services/resourceService';
-import { ResourceCard } from '../components/facilities/ResourceCard';
-import { ResourceFormModal } from '../components/facilities/ResourceFormModal';
-import { Button } from '../components/ui/Button';
-import { LoadingSpinner } from '../components/ui/LoadingSpinner';
-import { EmptyState } from '../components/ui/EmptyState';
+import { ResourceCard } from '../../components/facilities/ResourceCard';
+import { ResourceFormModal } from '../../components/facilities/ResourceFormModal';
+import { Button } from '../../components/ui/Button';
+import { LoadingSpinner } from '../../components/ui/LoadingSpinner';
+import { EmptyState } from '../../components/ui/EmptyState';
 
 export const ResourceListPage = () => {
   const [resources, setResources] = useState([]);

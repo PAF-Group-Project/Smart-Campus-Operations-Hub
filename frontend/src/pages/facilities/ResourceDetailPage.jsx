@@ -3,10 +3,10 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import {ArrowLeft, MapPin, Users, Calendar, AlertTriangle, Activity, Wrench, Settings, Edit2, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { getResourceById, deleteResource, updateResource, updateResourceStatus } from '../../services/resourceService';
-import { Badge } from '../components/ui/Badge';
-import { Button } from '../components/ui/Button';
-import { LoadingSpinner } from '../components/ui/LoadingSpinner';
-import { ResourceFormModal } from '../components/facilities/ResourceFormModal';
+import { Badge } from '../../components/ui/Badge';
+import { Button } from '../../components/ui/Button';
+import { LoadingSpinner } from '../../components/ui/LoadingSpinner';
+import { ResourceFormModal } from '../../components/facilities/ResourceFormModal';
 
 export const ResourceDetailPage = () => {
   const { id } = useParams();
