@@ -7,17 +7,17 @@ import {
   Ticket, 
   Bell, 
   Settings,
-  Users
+  Users,
+  ShieldCheck,
+  Briefcase
 } from 'lucide-react';
 
 const Sidebar = () => {
   const navItems = [
     { name: 'Dashboard', path: '/dashboard', icon: BarChart2 },
-    { name: 'Facilities', path: '/facilities', icon: Box },
-    { name: 'Bookings', path: '/bookings', icon: Calendar },
-    { name: 'Tickets', path: '/tickets', icon: Ticket },
-    { name: 'Notifications', path: '/notifications', icon: Bell },
-    { name: 'Users', path: '/users', icon: Users, role: 'ADMIN' },
+    { name: 'Student Portal', path: '/student/tickets', icon: Ticket },
+    { name: 'Admin Control', path: '/admin/tickets', icon: ShieldCheck },
+    { name: 'Tech Queue', path: '/technician/tickets', icon: Briefcase },
   ];
 
   return (
