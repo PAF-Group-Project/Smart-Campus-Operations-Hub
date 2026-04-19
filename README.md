@@ -25,6 +25,12 @@ Professional foundation for a university group project, built with Spring Boot a
     /routes       - Application routing
 ```
 
+## Member 1 Module Scope (Facilities & Assets Catalogue)
+
+- Maintain a catalogue of bookable resources: lecture halls, labs, meeting rooms, and equipment (projectors, cameras, etc.).
+- Track key metadata for each resource, including type, capacity, location, availability windows, and status (e.g., `ACTIVE`, `OUT_OF_SERVICE`).
+- Support search and filtering by resource attributes such as type, capacity, and location.
+
 ## Getting Started
 
 ### Backend
