@@ -13,9 +13,10 @@ public class Notification {
     @Id
     private String id;
     private String userId;
+    private String title;
     private String message;
     private String type; // e.g., BOOKING_CONFIRMED, TICKET_UPDATE
-    private boolean read;
+    private boolean isRead;
 
     @CreatedDate
     private LocalDateTime createdAt;
