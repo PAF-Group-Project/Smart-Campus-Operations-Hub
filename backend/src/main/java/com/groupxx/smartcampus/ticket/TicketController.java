@@ -21,6 +21,7 @@ public class TicketController {
     public ResponseEntity<TicketResponseDTO> createTicket(
             @RequestPart("ticket") @Valid TicketRequestDTO ticketRequest,
             @RequestPart(value = "attachments", required = false) List<MultipartFile> attachments) {
+        System.out.println("Received ticket creation request: " + ticketRequest.getTitle());
         return new ResponseEntity<>(ticketService.createTicket(ticketRequest, attachments), HttpStatus.CREATED);
     }
 
