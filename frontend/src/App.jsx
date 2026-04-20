@@ -7,6 +7,7 @@ import { AuthProvider } from './context/AuthContext';
 import LoginPage from './pages/LoginPage';
 import UnauthorizedPage from './pages/UnauthorizedPage';
 import UserManagementPage from './pages/UserManagementPage';
+import NotificationsPage from './pages/NotificationsPage';
 
 // Placeholder Pages
 const Dashboard = () => <div className="p-6 bg-white rounded-xl shadow-sm border border-slate-100"><h2 className="text-2xl font-bold mb-4">Dashboard Overview</h2><p className="text-slate-600">Welcome to the Smart Campus Operations Hub.</p></div>;
@@ -28,6 +29,7 @@ function App() {
                 <DashboardLayout>
                   <Routes>
                     <Route path="dashboard" element={<Dashboard />} />
+                    <Route path="notifications" element={<NotificationsPage />} />
                     
                     <Route 
                       path="users" 
