@@ -1,6 +1,7 @@
 import React from 'react';
 import { User, LogOut, Search } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import NotificationBell from '../ui/NotificationBell';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -19,6 +20,8 @@ const Navbar = () => {
       </div>
 
       <div className="flex items-center space-x-6">
+        <NotificationBell />
+        
         <div className="flex items-center space-x-3">
           <div className="text-right hidden sm:block">
             <p className="text-sm font-semibold text-slate-800">{user?.name || 'Guest'}</p>
