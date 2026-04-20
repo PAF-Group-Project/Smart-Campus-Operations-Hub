@@ -57,6 +57,11 @@ const StudentCreateTicket = () => {
             await ticketApi.createTicket(formData, files);
             navigate('/student/tickets');
         } catch (err) {
+            console.error("Ticket submission error:", err);
+            if (err.response) {
+                console.error("Response data:", err.response.data);
+                console.error("Response status:", err.response.status);
+            }
             const message = err.response?.data?.message || err.response?.data?.errors?.title || "Failed to submit ticket";
             setError(message);
         } finally {

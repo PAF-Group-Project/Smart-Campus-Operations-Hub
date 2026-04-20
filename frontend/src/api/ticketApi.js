@@ -9,9 +9,7 @@ const ticketApi = {
         if (files) {
             files.forEach(file => formData.append('attachments', file));
         }
-        return axios.post(API_BASE_URL, formData, {
-            headers: { 'Content-Type': 'multipart/form-data' }
-        });
+        return axios.post(API_BASE_URL, formData);
     },
 
     getAllTickets: () => axios.get(API_BASE_URL),
