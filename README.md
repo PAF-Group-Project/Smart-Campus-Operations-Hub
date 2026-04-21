@@ -1,4 +1,4 @@
-# Smart Campus Operations Hub
+# Smart Campus Operations Hub---
 
 Welcome to the Smart Campus Operations Hub repository! This project features a robust **Spring Boot REST API backend** and a scalable **React + Vite frontend** to power campus facility and asset management.
 
