@@ -94,6 +94,18 @@ const AdminTicketDetails = () => {
             alert("Comment failed");
         }
     };
+    
+    const handleUpdateComment = async (commentId, content) => {
+        try {
+            await ticketApi.updateComment(id, commentId, { 
+                userId: ADMIN_ID, 
+                content 
+            });
+            fetchTicket();
+        } catch (err) {
+            alert("Failed to update comment");
+        }
+    };
 
     if (loading) return <div className="p-10 text-center animate-pulse">Loading Review Panel...</div>;
     
@@ -187,6 +199,7 @@ const AdminTicketDetails = () => {
                                     comments={ticket.comments || []} 
                                     currentUserId={ADMIN_ID}
                                     onDelete={(cid) => ticketApi.deleteComment(id, cid, ADMIN_ID).then(fetchTicket)}
+                                    onUpdate={handleUpdateComment}
                                 />
                                 
                                 <form onSubmit={handleAddComment} className="mt-6 flex gap-3">

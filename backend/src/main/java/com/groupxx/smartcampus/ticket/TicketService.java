@@ -187,6 +187,26 @@ public class TicketService {
         ticketRepository.save(ticket);
     }
 
+    public TicketResponseDTO updateComment(String ticketId, String commentId, String userId, String newContent) {
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
+        
+        Ticket.Comment commentToUpdate = ticket.getComments().stream()
+                .filter(c -> c.getId().equals(commentId))
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
+        
+        // Ownership check
+        if (!commentToUpdate.getAuthorId().equals(userId)) {
+            throw new BusinessRuleException("You can only edit your own comments");
+        }
+        
+        commentToUpdate.setContent(newContent);
+        commentToUpdate.setUpdatedAt(LocalDateTime.now());
+        
+        return mapToResponse(ticketRepository.save(ticket));
+    }
+
     private TicketResponseDTO mapToResponse(Ticket ticket) {
         TicketResponseDTO response = new TicketResponseDTO();
         response.setId(ticket.getId());

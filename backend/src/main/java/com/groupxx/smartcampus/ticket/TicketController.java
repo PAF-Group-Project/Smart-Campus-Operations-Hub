@@ -79,4 +79,14 @@ public class TicketController {
         ticketService.deleteComment(ticketId, commentId, userId);
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("/{ticketId}/comments/{commentId}")
+    public ResponseEntity<TicketResponseDTO> updateComment(
+            @PathVariable String ticketId, 
+            @PathVariable String commentId, 
+            @RequestBody java.util.Map<String, String> payload) {
+        String userId = payload.get("userId");
+        String content = payload.get("content");
+        return ResponseEntity.ok(ticketService.updateComment(ticketId, commentId, userId, content));
+    }
 }

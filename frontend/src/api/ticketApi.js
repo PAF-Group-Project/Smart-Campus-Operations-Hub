@@ -29,7 +29,10 @@ const ticketApi = {
     addComment: (id, commentData) => axios.post(`${API_BASE_URL}/${id}/comments`, commentData),
     
     deleteComment: (ticketId, commentId, userId) => 
-        axios.delete(`${API_BASE_URL}/${ticketId}/comments/${commentId}?userId=${userId}`)
+        axios.delete(`${API_BASE_URL}/${ticketId}/comments/${commentId}?userId=${userId}`),
+
+    updateComment: (ticketId, commentId, commentData) => 
+        axios.patch(`${API_BASE_URL}/${ticketId}/comments/${commentId}`, commentData)
 };
 
 export default ticketApi;

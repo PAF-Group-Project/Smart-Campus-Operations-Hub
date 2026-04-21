@@ -66,6 +66,18 @@ const StudentTicketDetails = () => {
         }
     };
 
+    const handleUpdateComment = async (commentId, content) => {
+        try {
+            await ticketApi.updateComment(id, commentId, { 
+                userId: STUDENT_ID, 
+                content 
+            });
+            fetchTicket();
+        } catch (error) {
+            alert("Failed to update comment");
+        }
+    };
+
     if (loading) return <div className="p-10 text-center animate-pulse text-slate-400">Loading ticket details...</div>;
     
     if (error) return (
@@ -175,6 +187,7 @@ const StudentTicketDetails = () => {
                             comments={ticket.comments || []} 
                             currentUserId={STUDENT_ID}
                             onDelete={handleDeleteComment}
+                            onUpdate={handleUpdateComment}
                         />
 
                         <form onSubmit={handleAddComment} className="relative">
