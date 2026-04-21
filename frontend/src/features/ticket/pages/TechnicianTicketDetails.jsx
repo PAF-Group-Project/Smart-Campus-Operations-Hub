@@ -75,13 +75,17 @@ const TechnicianTicketDetails = () => {
 
     const handleUpdateComment = async (commentId, content) => {
         try {
-            await ticketApi.updateComment(id, commentId, { 
+            await ticketApi.updateComment({ 
+                ticketId: id,
+                commentId: commentId,
                 userId: TECH_ID, 
                 content 
             });
             fetchTicket();
         } catch (err) {
-            alert("Failed to update comment");
+            console.error("Update failed:", err);
+            const message = err.response?.data?.message || "Failed to update comment";
+            alert(message);
         }
     };
 

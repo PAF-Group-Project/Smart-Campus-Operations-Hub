@@ -68,13 +68,17 @@ const StudentTicketDetails = () => {
 
     const handleUpdateComment = async (commentId, content) => {
         try {
-            await ticketApi.updateComment(id, commentId, { 
+            await ticketApi.updateComment({ 
+                ticketId: id,
+                commentId: commentId,
                 userId: STUDENT_ID, 
                 content 
             });
             fetchTicket();
-        } catch (error) {
-            alert("Failed to update comment");
+        } catch (err) {
+            console.error("Update failed:", err);
+            const message = err.response?.data?.message || "Failed to update comment";
+            alert(message);
         }
     };
 
