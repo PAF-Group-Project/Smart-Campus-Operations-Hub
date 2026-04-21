@@ -9,7 +9,7 @@ The project encompasses two primary directories:
 ### Backend
 A Spring Boot 3 application using:
 - **Spring Data MongoDB** for robust document storage (Connection string configured for MongoDB Atlas).
-- **Bean Validation** to ensure model constraints explicitly via JPA annotations.
+- **Bean Validation** to ensure model constraints explicitly via `jakarta.validation` annotations.
 - Standard **Model -> Repository -> Service -> Controller** layered architecture.
 - Core endpoints located at `/api/v1/resources` supporting CRUD workflows with granular filtering.
 
@@ -44,7 +44,7 @@ A Vite + React application styled elegantly with:
    > Port settings in the backend `@CrossOrigin` config support both `3000` and `5173`.
 
 
-## Project Structure
+## Repository Layout
 
 ```text
 /backend          - Spring Boot 3.2+ (Java 17)
