@@ -40,15 +40,24 @@ public class TicketService {
                 .comments(new ArrayList<>())
                 .build();
 
-        // Handle attachments simulation
+        // Handle real file uploads
         if (attachments != null) {
             for (MultipartFile file : attachments) {
-                ticket.getAttachments().add(Ticket.Attachment.builder()
-                        .name(file.getOriginalFilename())
-                        .contentType(file.getContentType())
-                        .size(file.getSize())
-                        .url("/api/uploads/" + UUID.randomUUID()) // Simulated URL
-                        .build());
+                try {
+                    String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+                    java.nio.file.Path path = java.nio.file.Paths.get("uploads", fileName);
+                    java.nio.file.Files.createDirectories(path.getParent());
+                    java.nio.file.Files.write(path, file.getBytes());
+                    
+                    ticket.getAttachments().add(Ticket.Attachment.builder()
+                            .name(file.getOriginalFilename())
+                            .contentType(file.getContentType())
+                            .size(file.getSize())
+                            .url("/api/uploads/" + fileName)
+                            .build());
+                } catch (java.io.IOException e) {
+                    System.err.println("Failed to save file: " + e.getMessage());
+                }
             }
         }
 
