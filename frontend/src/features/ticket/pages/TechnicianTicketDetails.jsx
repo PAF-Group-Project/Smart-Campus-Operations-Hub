@@ -145,7 +145,15 @@ const TechnicianTicketDetails = () => {
                                 <div className="flex gap-3">
                                     {ticket.attachments.map((a, i) => (
                                         <div key={i} className="w-20 h-20 rounded-2xl border-2 border-slate-100 overflow-hidden shadow-inner">
-                                            <img src="https://images.unsplash.com/photo-1558494949-ef0109121c6b?auto=format&fit=crop&q=80&w=200" alt="Attachment" className="w-full h-full object-cover grayscale" />
+                                            <img 
+                                                src={a.url?.startsWith('http') ? a.url : (a.url?.startsWith('/') ? `http://localhost:8080${a.url}` : a.url)} 
+                                                onError={(e) => {
+                                                    e.target.onerror = null; 
+                                                    e.target.src = `https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&q=80&w=300`;
+                                                }}
+                                                alt="Attachment" 
+                                                className="w-full h-full object-cover grayscale" 
+                                            />
                                         </div>
                                     ))}
                                 </div>

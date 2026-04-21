@@ -154,7 +154,15 @@ const StudentTicketDetails = () => {
                                 <div className="flex flex-wrap gap-4">
                                     {ticket.attachments.map((file, i) => (
                                         <div key={i} className="group relative w-32 h-32 rounded-2xl overflow-hidden border border-slate-200 cursor-zoom-in">
-                                            <img src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&q=80&w=200" alt="Attachment" className="w-full h-full object-cover transition-transform group-hover:scale-110" />
+                                            <img 
+                                                src={file.url?.startsWith('http') ? file.url : (file.url?.startsWith('/') ? `http://localhost:8080${file.url}` : file.url)} 
+                                                onError={(e) => {
+                                                    e.target.onerror = null; 
+                                                    e.target.src = `https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&q=80&w=300`;
+                                                }}
+                                                alt="Attachment" 
+                                                className="w-full h-full object-cover transition-transform group-hover:scale-110" 
+                                            />
                                             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                                 <span className="text-[10px] text-white font-bold uppercase tracking-wider">View</span>
                                             </div>
