@@ -48,10 +48,24 @@ public class ResourceController {
 
     @PatchMapping("/{id}/status")
     public ResponseEntity<ApiResponse<Resource>> updateResourceStatus(@PathVariable String id, @RequestBody Map<String, String> updates) {
-        if (!updates.containsKey("status")) {
-            throw new IllegalArgumentException("Status field is required");
+        if (updates == null || !updates.containsKey("status") || updates.get("status") == null || updates.get("status").isBlank()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.error("Status field is required"));
         }
-        ResourceStatus status = ResourceStatus.valueOf(updates.get("status"));
+
+        String statusValue = updates.get("status");
+        ResourceStatus status;
+        try {
+            status = ResourceStatus.valueOf(statusValue);
+        } catch (IllegalArgumentException ex) {
+            String allowedStatuses = String.join(", ",
+                    java.util.Arrays.stream(ResourceStatus.values())
+                            .map(Enum::name)
+                            .toArray(String[]::new));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.error("Invalid status value: " + statusValue + ". Allowed values are: " + allowedStatuses));
+        }
+
         Resource updated = resourceService.updateResourceStatus(id, status);
         return ResponseEntity.ok(ApiResponse.success(updated, "Resource status updated successfully"));
     }
