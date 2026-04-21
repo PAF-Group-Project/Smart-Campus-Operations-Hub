@@ -131,7 +131,7 @@ export const ResourceFormModal = ({ isOpen, onClose, onSubmit, initialData = nul
           </div>
           
           {formData.availabilityWindows.length === 0 ? (
-            <div className="text-sm text-gray-500 italic p-3bg-gray-50 rounded-md border border-dashed border-gray-200 text-center">No availability windows defined.</div>
+            <div className="text-sm text-gray-500 italic p-3 bg-gray-50 rounded-md border border-dashed border-gray-200 text-center">No availability windows defined.</div>
           ) : (
             <div className="space-y-3">
               {formData.availabilityWindows.map((window, index) => (
