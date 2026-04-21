@@ -14,6 +14,7 @@ const TechnicianTicketDetails = () => {
     const navigate = useNavigate();
     const [ticket, setTicket] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [resolutionNotes, setResolutionNotes] = useState('');
     const [status, setStatus] = useState('');
     const [newComment, setNewComment] = useState('');
@@ -25,12 +26,14 @@ const TechnicianTicketDetails = () => {
 
     const fetchTicket = async () => {
         try {
-            const res = await ticketApi.getTicketById(id);
+            const res = await ticketApi.getTicketById(id, 'TECHNICIAN');
             setTicket(res.data);
             setResolutionNotes(res.data.resolutionNotes || '');
             setStatus(res.data.status);
         } catch (err) {
             console.error(err);
+            const message = err.response?.data?.message || "Error fetching ticket details";
+            setError(message);
         } finally {
             setLoading(false);
         }
@@ -71,6 +74,23 @@ const TechnicianTicketDetails = () => {
     };
 
     if (loading) return <div className="p-10 text-center">Loading task details...</div>;
+    
+    if (error) return (
+        <div className="p-10 text-center space-y-4">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-rose-50 text-rose-500 mb-2">
+                <Activity className="w-8 h-8" />
+            </div>
+            <h2 className="text-xl font-bold text-slate-900">{error}</h2>
+            <p className="text-slate-500">This ticket has been closed or is no longer accessible.</p>
+            <button 
+                onClick={() => navigate('/technician/tickets')}
+                className="px-6 py-2 bg-indigo-600 text-white rounded-xl font-bold transition-all hover:bg-indigo-700 shadow-lg shadow-indigo-100"
+            >
+                Back to Worklist
+            </button>
+        </div>
+    );
+
     if (!ticket) return <div className="p-10 text-center text-rose-500">Ticket not found</div>;
 
     return (

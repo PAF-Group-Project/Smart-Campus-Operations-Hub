@@ -14,6 +14,7 @@ const StudentTicketDetails = () => {
     const navigate = useNavigate();
     const [ticket, setTicket] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [newComment, setNewComment] = useState('');
     const [sendingComment, setSendingComment] = useState(false);
 
@@ -23,10 +24,12 @@ const StudentTicketDetails = () => {
 
     const fetchTicket = async () => {
         try {
-            const response = await ticketApi.getTicketById(id);
+            const response = await ticketApi.getTicketById(id, 'USER');
             setTicket(response.data);
         } catch (error) {
             console.error("Error fetching ticket:", error);
+            const message = error.response?.data?.message || "Error fetching ticket details";
+            setError(message);
         } finally {
             setLoading(false);
         }
@@ -64,6 +67,23 @@ const StudentTicketDetails = () => {
     };
 
     if (loading) return <div className="p-10 text-center animate-pulse text-slate-400">Loading ticket details...</div>;
+    
+    if (error) return (
+        <div className="p-10 text-center space-y-4">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-rose-50 text-rose-500 mb-2">
+                <AlertCircle className="w-8 h-8" />
+            </div>
+            <h2 className="text-xl font-bold text-slate-900">{error}</h2>
+            <p className="text-slate-500">You do not have permission to view this ticket or it has been restricted.</p>
+            <button 
+                onClick={() => navigate('/student/tickets')}
+                className="px-6 py-2 bg-indigo-600 text-white rounded-xl font-bold transition-all hover:bg-indigo-700 shadow-lg shadow-indigo-100"
+            >
+                Back to List
+            </button>
+        </div>
+    );
+
     if (!ticket) return <div className="p-10 text-center text-rose-500">Ticket not found</div>;
 
     return (

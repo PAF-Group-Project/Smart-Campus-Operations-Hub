@@ -41,8 +41,10 @@ public class TicketController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TicketResponseDTO> getTicketById(@PathVariable String id) {
-        return ResponseEntity.ok(ticketService.getTicketById(id));
+    public ResponseEntity<TicketResponseDTO> getTicketById(
+            @PathVariable String id, 
+            @RequestParam(required = false) String role) {
+        return ResponseEntity.ok(ticketService.getTicketById(id, role));
     }
 
     @PatchMapping("/{id}/assign")

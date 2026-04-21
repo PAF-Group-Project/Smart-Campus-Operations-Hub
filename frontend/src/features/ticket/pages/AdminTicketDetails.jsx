@@ -14,6 +14,7 @@ const AdminTicketDetails = () => {
     const navigate = useNavigate();
     const [ticket, setTicket] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [rejecting, setRejecting] = useState(false);
     const [rejectReason, setRejectReason] = useState('');
     const [newComment, setNewComment] = useState('');
@@ -30,10 +31,12 @@ const AdminTicketDetails = () => {
 
     const fetchTicket = async () => {
         try {
-            const res = await ticketApi.getTicketById(id);
+            const res = await ticketApi.getTicketById(id, 'ADMIN');
             setTicket(res.data);
         } catch (err) {
             console.error(err);
+            const message = err.response?.data?.message || "Error fetching ticket details";
+            setError(message);
         } finally {
             setLoading(false);
         }
@@ -93,6 +96,23 @@ const AdminTicketDetails = () => {
     };
 
     if (loading) return <div className="p-10 text-center animate-pulse">Loading Review Panel...</div>;
+    
+    if (error) return (
+        <div className="p-10 text-center space-y-4">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-rose-50 text-rose-500 mb-2">
+                <ShieldCheck className="w-8 h-8" />
+            </div>
+            <h2 className="text-xl font-bold text-slate-900">{error}</h2>
+            <p className="text-slate-500">This ticket has been finalized and its details are now restricted from further viewing.</p>
+            <button 
+                onClick={() => navigate('/admin/tickets')}
+                className="px-6 py-2 bg-slate-900 text-white rounded-xl font-bold transition-all hover:bg-slate-800 shadow-lg"
+            >
+                Back to Management
+            </button>
+        </div>
+    );
+
     if (!ticket) return <div className="p-10 text-center text-rose-500">Ticket not found</div>;
 
     return (

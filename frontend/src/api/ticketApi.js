@@ -18,7 +18,7 @@ const ticketApi = {
     
     getTechnicianTickets: (technicianId) => axios.get(`${API_BASE_URL}/technician/${technicianId}`),
     
-    getTicketById: (id) => axios.get(`${API_BASE_URL}/${id}`),
+    getTicketById: (id, role) => axios.get(`${API_BASE_URL}/${id}${role ? `?role=${role}` : ''}`),
     
     assignTechnician: (id, technicianData) => axios.patch(`${API_BASE_URL}/${id}/assign`, technicianData),
     

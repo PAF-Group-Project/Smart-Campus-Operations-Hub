@@ -82,9 +82,15 @@ public class TicketService {
                 .collect(Collectors.toList());
     }
 
-    public TicketResponseDTO getTicketById(String id) {
+    public TicketResponseDTO getTicketById(String id, String role) {
         Ticket ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Ticket not found with id: " + id));
+        
+        // Students (USER role) cannot view CLOSED tickets
+        if ("USER".equals(role) && ticket.getStatus() == TicketStatus.CLOSED) {
+            throw new BusinessRuleException("Closed tickets cannot be viewed by students");
+        }
+        
         return mapToResponse(ticket);
     }
 
