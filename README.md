@@ -1,8 +1,50 @@
 # Smart Campus Operations Hub
 
-Professional foundation for a university group project, built with Spring Boot and React.
+Welcome to the Smart Campus Operations Hub repository! This project features a robust **Spring Boot REST API backend** and a scalable **React + Vite frontend** to power campus facility and asset management.
 
 ## Project Structure
+
+The project encompasses two primary directories:
+
+### Backend
+A Spring Boot 3 application using:
+- **Spring Data MongoDB** for robust document storage (Connection string configured for MongoDB Atlas).
+- **Bean Validation** to ensure model constraints explicitly via `jakarta.validation` annotations.
+- Standard **Model -> Repository -> Service -> Controller** layered architecture.
+- Core endpoints located at `/api/v1/resources` supporting CRUD workflows with granular filtering.
+
+#### Setup Instructions (Backend)
+1. Ensure Java 17 and Maven are installed locally.
+2. Navigate to the `backend/` directory.
+3. Your database connection defaults to the configured MongoDB URI placeholder in `backend/src/main/resources/application.yml`. 
+4. Run the application:
+   ```bash
+   mvn spring-boot:run
+   ```
+   > The server will start on default port `8080`.
+
+### Frontend
+A Vite + React application styled elegantly with:
+- **TailwindCSS** for responsive and highly customized utility designs.
+- Built-in layouts (`DashboardLayout`, `Sidebar`) and shared UI components (`Badge`, `Modal`, `Button`, `EmptyState`, `LoadingSpinner`).
+- Componentized architecture that is highly reactive and cleanly maps out Data API's onto local states utilizing `Axios` in `src/services`.
+
+#### Setup Instructions (Frontend)
+1. Ensure Node.js 18+ is installed globally.
+2. Navigate to the `frontend/` directory.
+3. Install the dependencies:
+   ```bash
+   npm install
+   ```
+4. Start the interactive development server:
+   ```bash
+   npm run dev
+   ```
+   > The local development server will start on `http://localhost:5173/`. 
+   > Port settings in the backend `@CrossOrigin` config support both `3000` and `5173`.
+
+
+## Repository Layout
 
 ```text
 /backend          - Spring Boot 3.2+ (Java 17)
