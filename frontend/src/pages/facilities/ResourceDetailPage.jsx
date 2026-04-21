@@ -20,7 +20,8 @@ export const ResourceDetailPage = () => {
     setLoading(true);
     try {
       const data = await getResourceById(id);
-      setResource(data);
+      const resourceData = data?.data ?? data;
+      setResource(resourceData);
     } catch (error) {
       toast.error('Failed to load facility details');
       navigate('/facilities');

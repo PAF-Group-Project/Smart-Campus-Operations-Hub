@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +30,8 @@ public class ResourceServiceImpl implements ResourceService {
             query.addCriteria(Criteria.where("type").is(type));
         }
         if (location != null && !location.trim().isEmpty()) {
-            query.addCriteria(Criteria.where("location").regex(location, "i"));
+            query.addCriteria(Criteria.where("location")
+                    .regex(Pattern.compile(Pattern.quote(location), Pattern.CASE_INSENSITIVE)));
         }
         if (minCapacity != null) {
             query.addCriteria(Criteria.where("capacity").gte(minCapacity));

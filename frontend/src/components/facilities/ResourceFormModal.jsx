@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, X } from 'lucide-react';
 import { Modal } from '../ui/Modal';
-import { Button } from '../ui/Button';
+import Button from '../ui/Button';
 
 export const ResourceFormModal = ({ isOpen, onClose, onSubmit, initialData = null }) => {
   const [formData, setFormData] = useState({
@@ -131,7 +131,7 @@ export const ResourceFormModal = ({ isOpen, onClose, onSubmit, initialData = nul
           </div>
           
           {formData.availabilityWindows.length === 0 ? (
-            <div className="text-sm text-gray-500 italic p-3bg-gray-50 rounded-md border border-dashed border-gray-200 text-center">No availability windows defined.</div>
+            <div className="text-sm text-gray-500 italic p-3 bg-gray-50 rounded-md border border-dashed border-gray-200 text-center">No availability windows defined.</div>
           ) : (
             <div className="space-y-3">
               {formData.availabilityWindows.map((window, index) => (

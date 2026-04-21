@@ -1,5 +1,6 @@
 package com.groupxx.smartcampus.resource;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -31,6 +32,7 @@ public class Resource {
     @NotNull(message = "Status is required")
     private ResourceStatus status;
 
+    @Valid
     private List<AvailabilityWindow> availabilityWindows;
 
     private String description;
