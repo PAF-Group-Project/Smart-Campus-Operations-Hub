@@ -144,16 +144,17 @@ const TechnicianTicketDetails = () => {
                                 <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">Photos</h3>
                                 <div className="flex gap-3">
                                     {ticket.attachments.map((a, i) => (
-                                        <div key={i} className="w-20 h-20 rounded-2xl border-2 border-slate-100 overflow-hidden shadow-inner">
+                                        <div key={i} className="group relative w-32 h-32 rounded-2xl overflow-hidden border border-slate-200 cursor-zoom-in flex-shrink-0">
                                             <img 
-                                                src={a.url?.startsWith('http') ? a.url : (a.url?.startsWith('/') ? `http://localhost:8080${a.url}` : a.url)} 
+                                                src={a.url ? (a.url.startsWith('http') ? a.url : (a.url.startsWith('/') ? `http://localhost:8080${a.url}` : a.url)) : `https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&q=80&w=300`} 
                                                 onError={(e) => {
                                                     e.target.onerror = null; 
                                                     e.target.src = `https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&q=80&w=300`;
                                                 }}
                                                 alt="Attachment" 
-                                                className="w-full h-full object-cover grayscale" 
+                                                className="w-full h-full object-cover transition-transform group-hover:scale-110" 
                                             />
+                                            <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity" />
                                         </div>
                                     ))}
                                 </div>
