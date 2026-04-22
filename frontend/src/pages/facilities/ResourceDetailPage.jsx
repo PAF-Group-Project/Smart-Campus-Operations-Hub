@@ -4,7 +4,7 @@ import {ArrowLeft, MapPin, Users, Calendar, AlertTriangle, Activity, Wrench, Set
 import toast from 'react-hot-toast';
 import { getResourceById, deleteResource, updateResource, updateResourceStatus } from '../../services/resourceService';
 import { Badge } from '../../components/ui/Badge';
-import Button from '../../components/ui/Button';
+import { Button } from '../../components/ui/Button';
 import { LoadingSpinner } from '../../components/ui/LoadingSpinner';
 import { ResourceFormModal } from '../../components/facilities/ResourceFormModal';
 

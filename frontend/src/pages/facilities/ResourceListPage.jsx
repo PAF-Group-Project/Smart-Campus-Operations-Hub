@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 import { getAllResources, createResource } from '../../services/resourceService';
 import { ResourceCard } from '../../components/facilities/ResourceCard';
 import { ResourceFormModal } from '../../components/facilities/ResourceFormModal';
-import Button from '../../components/ui/Button';
+import { Button } from '../../components/ui/Button';
 import { LoadingSpinner } from '../../components/ui/LoadingSpinner';
 import { EmptyState } from '../../components/ui/EmptyState';
 

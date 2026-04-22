@@ -1,0 +1,31 @@
+# Maven
+target/
+*.class
+
+# Node / NPM
+node_modules/
+dist/
+.eslintcache
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+*.DS_Store
+
+# Java / Spring
+.mvn/
+mvnw
+mvnw.cmd
+.factorypath
+
+# Env files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+*.log
