@@ -1,11 +1,11 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { 
-  BarChart2, 
-  Calendar, 
-  Box, 
-  Ticket, 
-  Bell, 
+import {
+  BarChart2,
+  Calendar,
+  Box,
+  Ticket,
+  Bell,
   Settings,
   Users
 } from 'lucide-react';
@@ -25,17 +25,16 @@ const Sidebar = () => {
       <div className="p-6 border-b border-slate-200">
         <h1 className="text-xl font-bold text-primary-900">Campus Hub</h1>
       </div>
-      
+
       <nav className="flex-1 p-4 space-y-1">
         {navItems.map((item) => (
           <NavLink
             key={item.path}
             to={item.path}
-            className={({ isActive }) => 
-              `flex items-center space-x-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                isActive 
-                  ? 'bg-primary-50 text-primary-700' 
-                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+            className={({ isActive }) =>
+              `flex items-center space-x-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${isActive
+                ? 'bg-primary-50 text-primary-700'
+                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
               }`
             }
           >
