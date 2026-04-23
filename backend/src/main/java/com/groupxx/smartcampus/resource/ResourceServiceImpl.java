@@ -1,7 +1,6 @@
 package com.groupxx.smartcampus.resource;
 
 import com.groupxx.smartcampus.exception.ResourceNotFoundException;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -11,11 +10,15 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 @Service
-@RequiredArgsConstructor
 public class ResourceServiceImpl implements ResourceService {
 
     private final ResourceRepository resourceRepository;
     private final MongoTemplate mongoTemplate;
+
+    public ResourceServiceImpl(ResourceRepository resourceRepository, MongoTemplate mongoTemplate) {
+        this.resourceRepository = resourceRepository;
+        this.mongoTemplate = mongoTemplate;
+    }
 
     @Override
     public Resource createResource(Resource resource) {

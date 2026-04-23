@@ -2,7 +2,6 @@ package com.groupxx.smartcampus.resource;
 
 import com.groupxx.smartcampus.common.ApiResponse;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,10 +12,13 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1/resources")
 @CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5173"})
-@RequiredArgsConstructor
 public class ResourceController {
 
     private final ResourceService resourceService;
+
+    public ResourceController(ResourceService resourceService) {
+        this.resourceService = resourceService;
+    }
 
     @PostMapping
     public ResponseEntity<ApiResponse<Resource>> createResource(@Valid @RequestBody Resource resource) {

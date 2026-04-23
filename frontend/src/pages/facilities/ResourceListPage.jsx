@@ -28,7 +28,9 @@ export const ResourceListPage = () => {
       if (filters.location) activeFilters.location = filters.location;
       
       const response = await getAllResources(activeFilters);
-      setResources(response.data || []);
+      // Since our service returns the body.data directly (due to axios interceptor + service logic), 
+      // or if it returns the whole body, we handle both.
+      setResources(Array.isArray(response) ? response : (response?.data || []));
     } catch (error) {
       toast.error('Failed to load facilities');
       console.error(error);

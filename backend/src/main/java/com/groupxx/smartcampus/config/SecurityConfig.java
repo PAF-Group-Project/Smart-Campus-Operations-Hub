@@ -26,8 +26,8 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .cors(Customizer.withDefaults())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/v1/auth/**", "/public/**").permitAll()
-                .anyRequest().authenticated()
+                .requestMatchers("/api/v1/**", "/public/**").permitAll()
+                .anyRequest().permitAll()
             )
             .oauth2Login(oauth2 -> oauth2
                 .defaultSuccessUrl("/dashboard", true)
