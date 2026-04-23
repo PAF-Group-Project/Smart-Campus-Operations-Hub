@@ -26,8 +26,15 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/**", "/public/**", "/api/tickets", "/api/tickets/**",
-                                "/api/comments", "/api/comments/**", "/api/uploads", "/api/uploads/**")
+                        .requestMatchers(
+                                "/api/v1/auth/**",
+                                "/public/**",
+                                "/api/tickets",
+                                "/api/tickets/**",
+                                "/api/comments",
+                                "/api/comments/**",
+                                "/api/uploads",
+                                "/api/uploads/**")
                         .permitAll()
                         .anyRequest().authenticated())
                 .oauth2Login(oauth2 -> oauth2
