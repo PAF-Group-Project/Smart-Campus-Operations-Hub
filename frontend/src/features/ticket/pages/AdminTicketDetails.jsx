@@ -19,11 +19,7 @@ const AdminTicketDetails = () => {
     const [rejectReason, setRejectReason] = useState('');
     const [newComment, setNewComment] = useState('');
 
-    const [technicians] = useState([
-        { id: 'TECH001', name: 'Mike Johnson' },
-        { id: 'TECH002', name: 'Sarah Wilson' },
-        { id: 'TECH003', name: 'Robert Brown' }
-    ]);
+    const MIKE = { id: 'TECH001', name: 'Mike Johnson' };
 
     useEffect(() => {
         fetchTicket();
@@ -42,13 +38,9 @@ const AdminTicketDetails = () => {
         }
     };
 
-    const handleAssign = async (e) => {
-        const techId = e.target.value;
-        if (!techId) return;
-        const tech = technicians.find(t => t.id === techId);
-        
+    const handleAssignMike = async () => {
         try {
-            await ticketApi.assignTechnician(id, { technicianId: tech.id, technicianName: tech.name });
+            await ticketApi.assignTechnician(id, { technicianId: MIKE.id, technicianName: MIKE.name });
             fetchTicket();
         } catch (err) {
             alert("Assignment failed");
@@ -241,17 +233,14 @@ const AdminTicketDetails = () => {
                         <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight">Decisions & Workflow</h3>
                         
                         <div className="space-y-4">
-                            <div className="space-y-2">
-                                <label className="text-xs font-black text-slate-400 uppercase">Manage Technician</label>
-                                <select 
-                                    className="w-full p-4 bg-indigo-50 text-indigo-700 border-none rounded-2xl font-bold focus:ring-2 focus:ring-indigo-500 transition-all cursor-pointer outline-none"
-                                    value={ticket.assignedTechnicianId || ""}
-                                    onChange={handleAssign}
-                                >
-                                    <option value="">Choose Technician...</option>
-                                    {technicians.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
-                                </select>
-                            </div>
+                            <button
+                                onClick={handleAssignMike}
+                                disabled={ticket.assignedTechnicianId === 'TECH001'}
+                                className="w-full flex items-center justify-center gap-2 p-4 bg-emerald-500 hover:bg-emerald-600 disabled:bg-emerald-100 disabled:text-emerald-400 disabled:cursor-not-allowed text-white font-black rounded-2xl transition-all shadow-md shadow-emerald-200 hover:shadow-emerald-300 hover:-translate-y-0.5 active:scale-95 disabled:translate-y-0 disabled:shadow-none"
+                            >
+                                <UserPlus className="w-5 h-5" />
+                                {ticket.assignedTechnicianId === 'TECH001' ? 'Assigned to Mike Johnson' : 'Assign Technician'}
+                            </button>
 
                             <div className="grid grid-cols-2 gap-3">
                                 <button 
