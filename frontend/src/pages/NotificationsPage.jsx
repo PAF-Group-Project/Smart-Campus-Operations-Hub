@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Bell, Check, Trash2, CheckCircle2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import {
   createTestNotification,
   deleteNotification,
@@ -37,9 +38,11 @@ const NotificationsPage = () => {
       setNotifications(notifications.map(notif => 
         notif.id === id ? { ...notif, isRead: true } : notif
       ));
+      toast.success('Notification marked as read');
     } catch (error) {
       console.error('Error marking as read:', error);
       setError('Failed to mark notification as read.');
+      toast.error('Failed to mark notification as read');
     }
   };
 
@@ -49,9 +52,11 @@ const NotificationsPage = () => {
     try {
       await markAllNotificationsAsRead();
       setNotifications(notifications.map(notif => ({ ...notif, isRead: true })));
+      toast.success('All notifications marked as read');
     } catch (error) {
       console.error('Error marking all as read:', error);
       setError('Failed to mark all notifications as read.');
+      toast.error('Failed to mark all notifications as read');
     } finally {
       setBusy(false);
     }
@@ -61,9 +66,11 @@ const NotificationsPage = () => {
     try {
       await deleteNotification(id);
       setNotifications(notifications.filter(notif => notif.id !== id));
+      toast.success('Notification deleted');
     } catch (error) {
       console.error('Error deleting notification:', error);
       setError('Failed to delete notification.');
+      toast.error('Failed to delete notification');
     }
   };
 
@@ -75,9 +82,11 @@ const NotificationsPage = () => {
       if (created) {
         setNotifications([created, ...notifications]);
       }
+      toast.success('Notification created');
     } catch (error) {
       console.error('Error generating notification:', error);
       setError('Failed to create test notification.');
+      toast.error('Failed to create test notification');
     } finally {
       setBusy(false);
     }
@@ -107,18 +116,22 @@ const NotificationsPage = () => {
           {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
         </div>
         
-        <div className="flex gap-3">
-          <button 
+        <div className="flex flex-row flex-wrap gap-3">
+          <button
             onClick={generateTestNotification}
             disabled={busy}
-            className="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
+            className="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-gray-50 disabled:opacity-60 disabled:cursor-not-allowed transition-colors shadow-sm"
           >
             Create Test Alert
           </button>
-          <button 
+          <button
             onClick={handleMarkAllAsRead}
             disabled={busy || !notifications.some(n => !n.isRead)}
-            className="px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm flex items-center gap-2"
+            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors shadow-sm flex items-center gap-2 ${
+              notifications.some(n => !n.isRead)
+                ? 'text-white bg-blue-600 hover:bg-blue-700 shadow-blue-600/20'
+                : 'text-slate-700 bg-slate-200 cursor-not-allowed'
+            } ${busy ? 'opacity-70 cursor-not-allowed' : ''}`}
           >
             <CheckCircle2 size={16} />
             Mark All as Read

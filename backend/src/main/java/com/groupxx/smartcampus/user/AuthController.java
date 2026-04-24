@@ -1,5 +1,6 @@
 package com.groupxx.smartcampus.user;
 
+import com.groupxx.smartcampus.preferences.NotificationPreferences;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -46,6 +47,7 @@ public class AuthController {
                 .email(normalizedEmail)
                 .provider("local")
                 .role(Role.USER)
+                .notificationPreferences(NotificationPreferences.defaultPreferences())
                 .passwordHash(passwordEncoder.encode(request.getPassword()))
                 .build();
 

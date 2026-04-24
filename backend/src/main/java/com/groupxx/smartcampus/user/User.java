@@ -1,6 +1,7 @@
 package com.groupxx.smartcampus.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.groupxx.smartcampus.preferences.NotificationPreferences;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,6 +27,8 @@ public class User {
     private Role role;
     private String provider; // "google" or "local"
     private String googleId;
+    @Builder.Default
+    private NotificationPreferences notificationPreferences = NotificationPreferences.defaultPreferences();
     @JsonIgnore
     private String passwordHash;
 

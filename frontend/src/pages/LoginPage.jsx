@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Navigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 
 const LoginPage = () => {
@@ -34,6 +35,7 @@ const LoginPage = () => {
           password: formData.password
         });
         setStatus({ type: 'success', message: 'Logged in successfully.' });
+        toast.success('Login successful');
       } else {
         await registerWithPassword({
           name: formData.name,
@@ -41,10 +43,12 @@ const LoginPage = () => {
           password: formData.password
         });
         setStatus({ type: 'success', message: 'Account created and logged in.' });
+        toast.success('Account created successfully');
       }
     } catch (error) {
       const message = error?.response?.data?.message || 'Authentication failed';
       setStatus({ type: 'error', message });
+      toast.error(message);
     } finally {
       setSubmitting(false);
     }
