@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: smartcampus
+  data:
+    mongodb:
+      uri: ${MONGO_URI:mongodb+srv://pafmongodb_db_user:BhA6GLc4vFUKdIQ6@cluster0.rm0kl5u.mongodb.net/smartcampus?retryWrites=true&w=majority&appName=Cluster0}
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID:833598228067-7tpan0n3uqpl0ar0kg339oj147l5mmjh.apps.googleusercontent.com}
+            client-secret: ${GOOGLE_CLIENT_SECRET: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}
+            scope: email,profile
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+logging:
+  level:
+    org.springframework.data.mongodb: DEBUG
+    org.springframework.security: INFO
