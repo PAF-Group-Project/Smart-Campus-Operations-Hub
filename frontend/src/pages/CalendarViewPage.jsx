@@ -166,3 +166,4 @@ export default function CalendarViewPage() {
         </div>
     );
 }
+// Finalized calendar rendering logic
