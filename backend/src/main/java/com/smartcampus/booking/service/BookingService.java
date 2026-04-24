@@ -286,3 +286,5 @@ public class BookingService {
         return suggestions;
     }
 }
+
+//add business logic for booking availability and validation
