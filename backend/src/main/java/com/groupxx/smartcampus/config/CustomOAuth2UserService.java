@@ -1,5 +1,6 @@
 package com.groupxx.smartcampus.config;
 
+import com.groupxx.smartcampus.preferences.NotificationPreferences;
 import com.groupxx.smartcampus.user.Role;
 import com.groupxx.smartcampus.user.User;
 import com.groupxx.smartcampus.user.UserRepository;
@@ -53,6 +54,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 if (user.getProvider() == null || !"local".equalsIgnoreCase(user.getProvider())) {
                     user.setProvider(provider);
                 }
+                if (user.getNotificationPreferences() == null) {
+                    user.setNotificationPreferences(NotificationPreferences.defaultPreferences());
+                }
             } else {
                 user = User.builder()
                         .email(normalizedEmail)
@@ -61,6 +65,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                         .googleId(googleId)
                         .provider(provider)
                         .role(Role.USER) // Default role
+                        .notificationPreferences(NotificationPreferences.defaultPreferences())
                         .build();
             }
 

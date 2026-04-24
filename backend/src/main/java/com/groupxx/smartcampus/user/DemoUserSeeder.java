@@ -1,5 +1,6 @@
 package com.groupxx.smartcampus.user;
 
+import com.groupxx.smartcampus.preferences.NotificationPreferences;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,6 +33,7 @@ public class DemoUserSeeder implements CommandLineRunner {
                 .email(normalizedEmail)
                 .provider("local")
                 .role(role)
+                .notificationPreferences(NotificationPreferences.defaultPreferences())
                 .passwordHash(passwordEncoder.encode(rawPassword))
                 .build();
 

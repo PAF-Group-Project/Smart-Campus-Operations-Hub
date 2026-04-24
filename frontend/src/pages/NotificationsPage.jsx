@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Bell, Check, Trash2, CheckCircle2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import {
   createTestNotification,
   deleteNotification,
@@ -37,9 +38,11 @@ const NotificationsPage = () => {
       setNotifications(notifications.map(notif => 
         notif.id === id ? { ...notif, isRead: true } : notif
       ));
+      toast.success('Notification marked as read');
     } catch (error) {
       console.error('Error marking as read:', error);
       setError('Failed to mark notification as read.');
+      toast.error('Failed to mark notification as read');
     }
   };
 
@@ -49,9 +52,11 @@ const NotificationsPage = () => {
     try {
       await markAllNotificationsAsRead();
       setNotifications(notifications.map(notif => ({ ...notif, isRead: true })));
+      toast.success('All notifications marked as read');
     } catch (error) {
       console.error('Error marking all as read:', error);
       setError('Failed to mark all notifications as read.');
+      toast.error('Failed to mark all notifications as read');
     } finally {
       setBusy(false);
     }
@@ -61,9 +66,11 @@ const NotificationsPage = () => {
     try {
       await deleteNotification(id);
       setNotifications(notifications.filter(notif => notif.id !== id));
+      toast.success('Notification deleted');
     } catch (error) {
       console.error('Error deleting notification:', error);
       setError('Failed to delete notification.');
+      toast.error('Failed to delete notification');
     }
   };
 
@@ -75,9 +82,11 @@ const NotificationsPage = () => {
       if (created) {
         setNotifications([created, ...notifications]);
       }
+      toast.success('Notification created');
     } catch (error) {
       console.error('Error generating notification:', error);
       setError('Failed to create test notification.');
+      toast.error('Failed to create test notification');
     } finally {
       setBusy(false);
     }
