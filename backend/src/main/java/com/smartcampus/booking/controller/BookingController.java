@@ -117,3 +117,5 @@ public class BookingController {
         return ResponseEntity.ok(bookingService.checkAvailability(resourceId, date, startTime, endTime));
     }
 }
+
+//implement REST endpoints for booking management
