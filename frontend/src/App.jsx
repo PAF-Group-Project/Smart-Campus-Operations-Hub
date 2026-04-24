@@ -19,6 +19,9 @@ import { ResourceDetailPage } from './pages/facilities/ResourceDetailPage';
 // Placeholder Pages
 const Dashboard = () => <div className="p-6 bg-white rounded-xl shadow-sm border border-slate-100 font-sans"><h2 className="text-2xl font-bold mb-4">Dashboard Overview</h2><p className="text-slate-600">Welcome to the Smart Campus Operations Hub.</p></div>;
 const Bookings = () => <div className="p-6 bg-white rounded-xl shadow-sm border border-slate-100">Bookings Placeholder</div>;
+const Notifications = () => <div className="p-6 bg-white rounded-xl shadow-sm border border-slate-100">Notifications Placeholder</div>;
+const Users = () => <div className="p-6 bg-white rounded-xl shadow-sm border border-slate-100">Users Placeholder</div>;
+const Settings = () => <div className="p-6 bg-white rounded-xl shadow-sm border border-slate-100">Settings Placeholder</div>;
 
 function App() {
   return (
@@ -51,6 +54,12 @@ function App() {
 
                 {/* Bookings */}
                 <Route path="bookings" element={<Bookings />} />
+
+                {/* Shared navigation routes */}
+                <Route path="tickets" element={<Navigate to="/student/tickets" replace />} />
+                <Route path="notifications" element={<Notifications />} />
+                <Route path="users" element={<Users />} />
+                <Route path="settings" element={<Settings />} />
 
                 <Route path="/" element={<Navigate to="/dashboard" replace />} />
               </Routes>
