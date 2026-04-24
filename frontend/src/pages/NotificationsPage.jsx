@@ -116,18 +116,22 @@ const NotificationsPage = () => {
           {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
         </div>
         
-        <div className="flex gap-3">
-          <button 
+        <div className="flex flex-row flex-wrap gap-3">
+          <button
             onClick={generateTestNotification}
             disabled={busy}
-            className="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
+            className="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-gray-50 disabled:opacity-60 disabled:cursor-not-allowed transition-colors shadow-sm"
           >
             Create Test Alert
           </button>
-          <button 
+          <button
             onClick={handleMarkAllAsRead}
             disabled={busy || !notifications.some(n => !n.isRead)}
-            className="px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm flex items-center gap-2"
+            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors shadow-sm flex items-center gap-2 ${
+              notifications.some(n => !n.isRead)
+                ? 'text-white bg-blue-600 hover:bg-blue-700 shadow-blue-600/20'
+                : 'text-slate-700 bg-slate-200 cursor-not-allowed'
+            } ${busy ? 'opacity-70 cursor-not-allowed' : ''}`}
           >
             <CheckCircle2 size={16} />
             Mark All as Read
