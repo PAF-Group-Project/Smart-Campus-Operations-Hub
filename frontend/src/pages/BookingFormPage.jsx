@@ -239,3 +239,4 @@ export default function BookingFormPage() {
         </div>
     );
 }
+//implement client-side validation for booking requests
