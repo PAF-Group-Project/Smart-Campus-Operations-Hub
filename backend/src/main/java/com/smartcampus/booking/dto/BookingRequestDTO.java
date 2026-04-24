@@ -31,3 +31,4 @@ public class BookingRequestDTO {
     @Min(value = 1, message = "Expected attendees must be at least 1")
     private Integer expectedAttendees;
 }
+//optimize DTO structures for booking requests and responses
