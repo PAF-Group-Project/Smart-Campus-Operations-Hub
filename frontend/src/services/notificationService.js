@@ -1,20 +1,20 @@
 import api from '../api/axios';
 
-const extractData = (response) => response?.data ?? null;
+const extractData = (payload) => payload?.data ?? null;
 
 export const fetchMyNotifications = async () => {
-  const response = await api.get('/notifications/my');
-  return extractData(response) || [];
+  const payload = await api.get('/notifications/my');
+  return extractData(payload) || [];
 };
 
 export const fetchUnreadNotificationCount = async () => {
-  const response = await api.get('/notifications/unread-count');
-  return extractData(response) ?? 0;
+  const payload = await api.get('/notifications/unread-count');
+  return extractData(payload) ?? 0;
 };
 
 export const markNotificationAsRead = async (id) => {
-  const response = await api.patch(`/notifications/${id}/read`);
-  return extractData(response);
+  const payload = await api.patch(`/notifications/${id}/read`);
+  return extractData(payload);
 };
 
 export const markAllNotificationsAsRead = async () => {
@@ -26,6 +26,6 @@ export const deleteNotification = async (id) => {
 };
 
 export const createTestNotification = async (payload = {}) => {
-  const response = await api.post('/notifications/test', payload);
-  return extractData(response);
+  const responsePayload = await api.post('/notifications/test', payload);
+  return extractData(responsePayload);
 };
