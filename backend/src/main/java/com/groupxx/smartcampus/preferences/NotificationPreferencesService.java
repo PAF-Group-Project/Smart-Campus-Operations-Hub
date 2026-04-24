@@ -19,7 +19,7 @@ public class NotificationPreferencesService {
 
     public NotificationPreferences updatePreferences(String userId, NotificationPreferences preferences) {
         User user = findUser(userId);
-        user.setNotificationPreferences(preferences != null ? preferences : NotificationPreferences.defaultPreferences());
+        user.setNotificationPreferences(NotificationPreferences.normalized(preferences));
         return userRepository.save(user).getNotificationPreferences();
     }
 
@@ -33,6 +33,13 @@ public class NotificationPreferencesService {
             user.setNotificationPreferences(NotificationPreferences.defaultPreferences());
             return userRepository.save(user).getNotificationPreferences();
         }
-        return user.getNotificationPreferences();
+
+        NotificationPreferences normalized = NotificationPreferences.normalized(user.getNotificationPreferences());
+        if (!normalized.equals(user.getNotificationPreferences())) {
+            user.setNotificationPreferences(normalized);
+            return userRepository.save(user).getNotificationPreferences();
+        }
+
+        return normalized;
     }
 }
