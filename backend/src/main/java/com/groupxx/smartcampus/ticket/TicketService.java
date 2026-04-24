@@ -95,11 +95,6 @@ public class TicketService {
         Ticket ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Ticket not found with id: " + id));
         
-        // Students (USER role) cannot view CLOSED tickets
-        if ("USER".equals(role) && ticket.getStatus() == TicketStatus.CLOSED) {
-            throw new BusinessRuleException("Closed tickets cannot be viewed by students");
-        }
-        
         return mapToResponse(ticket);
     }
 

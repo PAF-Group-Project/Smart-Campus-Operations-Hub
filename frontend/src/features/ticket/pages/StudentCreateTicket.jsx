@@ -13,7 +13,8 @@ import {
     Camera, 
     FileText,
     Paperclip,
-    ChevronDown
+    ChevronDown,
+    Phone
 } from 'lucide-react';
 import ticketApi from '../../../api/ticketApi';
 
@@ -224,6 +225,27 @@ const StudentCreateTicket = () => {
                             ></textarea>
                             <p className="text-[11px] text-slate-400 pl-1">
                                 Explain what happened, when you noticed it, and whether it affects safety, access, or teaching.
+                            </p>
+                        </div>
+
+                        {/* Contact Details */}
+                        <div className="space-y-2">
+                            <label className="text-sm font-bold text-slate-700">
+                                Preferred Contact Details
+                                <span className="ml-2 text-[11px] font-normal text-slate-400">(phone or email so we can reach you)</span>
+                            </label>
+                            <div className="relative">
+                                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                                <input
+                                    type="text"
+                                    placeholder="e.g. 077 123 4567 or john@university.edu"
+                                    className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-[14px] focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all placeholder:text-slate-300"
+                                    value={formData.contactDetails}
+                                    onChange={(e) => setFormData({...formData, contactDetails: e.target.value})}
+                                />
+                            </div>
+                            <p className="text-[11px] text-slate-400 pl-1">
+                                Optional — helps the facilities team follow up faster.
                             </p>
                         </div>
 
