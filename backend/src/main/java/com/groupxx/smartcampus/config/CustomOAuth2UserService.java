@@ -11,6 +11,7 @@ import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -40,7 +41,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 );
             }
 
-            Optional<User> userOptional = userRepository.findByEmail(email);
+            String normalizedEmail = email.toLowerCase(Locale.ROOT);
+            Optional<User> userOptional = userRepository.findByEmail(normalizedEmail);
 
             User user;
             if (userOptional.isPresent()) {
@@ -48,9 +50,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 user.setName(name);
                 user.setAvatar(avatar);
                 user.setGoogleId(googleId);
+                if (user.getProvider() == null || !"local".equalsIgnoreCase(user.getProvider())) {
+                    user.setProvider(provider);
+                }
             } else {
                 user = User.builder()
-                        .email(email)
+                        .email(normalizedEmail)
                         .name(name)
                         .avatar(avatar)
                         .googleId(googleId)

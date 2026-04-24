@@ -1,10 +1,12 @@
 package com.groupxx.smartcampus.notification;
 
 import com.groupxx.smartcampus.exception.ResourceNotFoundException;
+import com.groupxx.smartcampus.notification.dto.NotificationResponse;
+import com.groupxx.smartcampus.notification.dto.TestNotificationRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -12,55 +14,78 @@ import java.util.List;
 public class NotificationService {
     private final NotificationRepository notificationRepository;
 
-    public List<Notification> getMyNotifications(String userId) {
-        return notificationRepository.findByUserIdOrderByCreatedAtDesc(userId);
+    public List<NotificationResponse> getMyNotifications(String userId) {
+        return notificationRepository.findByUserIdOrderByCreatedAtDesc(userId)
+                .stream()
+                .map(this::toResponse)
+                .toList();
     }
 
     public long getUnreadCount(String userId) {
         return notificationRepository.countByUserIdAndIsReadFalse(userId);
     }
 
-    public Notification markAsRead(String id, String userId) {
-        Notification notification = notificationRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Notification not found with id: " + id));
+    public NotificationResponse markAsRead(String id, String userId) {
+        Notification notification = notificationRepository.findByIdAndUserId(id, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Notification not found"));
 
-        if (!notification.getUserId().equals(userId)) {
-            throw new IllegalArgumentException("User does not have permission to access this notification");
+        if (!notification.isRead()) {
+            notification.setRead(true);
+            notification = notificationRepository.save(notification);
         }
-
-        notification.setRead(true);
-        return notificationRepository.save(notification);
+        return toResponse(notification);
     }
 
     public void markAllAsRead(String userId) {
-        List<Notification> unread = notificationRepository.findByUserIdOrderByCreatedAtDesc(userId).stream()
+        List<Notification> unread = notificationRepository.findByUserIdOrderByCreatedAtDesc(userId)
+                .stream()
                 .filter(n -> !n.isRead())
                 .toList();
 
-        unread.forEach(n -> n.setRead(true));
-        notificationRepository.saveAll(unread);
+        if (!unread.isEmpty()) {
+            unread.forEach(n -> n.setRead(true));
+            notificationRepository.saveAll(unread);
+        }
     }
 
     public void deleteNotification(String id, String userId) {
-        Notification notification = notificationRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Notification not found with id: " + id));
-
-        if (!notification.getUserId().equals(userId)) {
-            throw new IllegalArgumentException("User does not have permission to access this notification");
-        }
+        Notification notification = notificationRepository.findByIdAndUserId(id, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Notification not found"));
 
         notificationRepository.delete(notification);
     }
 
-    public Notification createTestNotification(String userId) {
-        Notification notification = new Notification();
-        notification.setUserId(userId);
-        notification.setTitle("Welcome to Smart Campus Hub!");
-        notification.setMessage("This is a test notification automatically generated for you.");
-        notification.setType("SYSTEM_ALERT");
-        notification.setRead(false);
-        notification.setCreatedAt(LocalDateTime.now());
-        
-        return notificationRepository.save(notification);
+    public NotificationResponse createTestNotification(String userId, TestNotificationRequest request) {
+        return createNotification(
+                userId,
+                StringUtils.hasText(request.getTitle()) ? request.getTitle().trim() : "Smart Campus Test Alert",
+                StringUtils.hasText(request.getMessage()) ? request.getMessage().trim() : "This is a demo notification for your viva.",
+                request.getType() != null ? request.getType() : NotificationType.SYSTEM
+        );
+    }
+
+    public NotificationResponse createNotification(String userId, String title, String message, NotificationType type) {
+        Notification notification = Notification.builder()
+                .userId(userId)
+                .title(title)
+                .message(message)
+                .type(type)
+                .isRead(false)
+                .build();
+
+        Notification saved = notificationRepository.save(notification);
+        return toResponse(saved);
+    }
+
+    private NotificationResponse toResponse(Notification notification) {
+        return NotificationResponse.builder()
+                .id(notification.getId())
+                .userId(notification.getUserId())
+                .title(notification.getTitle())
+                .message(notification.getMessage())
+                .type(notification.getType())
+                .isRead(notification.isRead())
+                .createdAt(notification.getCreatedAt())
+                .build();
     }
 }

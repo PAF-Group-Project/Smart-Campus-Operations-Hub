@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Bell } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { fetchUnreadNotificationCount } from '../../services/notificationService';
 
 const NotificationBell = () => {
   const [unreadCount, setUnreadCount] = useState(0);
@@ -8,19 +9,8 @@ const NotificationBell = () => {
 
   const fetchUnreadCount = async () => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) return;
-
-      const response = await fetch('http://localhost:8080/api/v1/notifications/unread-count', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      
-      const data = await response.json();
-      if (data.success) {
-        setUnreadCount(data.data);
-      }
+      const count = await fetchUnreadNotificationCount();
+      setUnreadCount(count);
     } catch (error) {
       console.error('Failed to fetch unread notifications count:', error);
     }
@@ -28,8 +18,7 @@ const NotificationBell = () => {
 
   useEffect(() => {
     fetchUnreadCount();
-    // In a real app, we might want to poll this or use WebSocket
-    const interval = setInterval(fetchUnreadCount, 60000); // Check every minute
+    const interval = setInterval(fetchUnreadCount, 30000);
     return () => clearInterval(interval);
   }, []);
 

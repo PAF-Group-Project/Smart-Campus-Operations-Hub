@@ -1,6 +1,5 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Toaster } from 'react-hot-toast';
 import DashboardLayout from './components/layout/DashboardLayout';
 import ProtectedRoute from './components/protected/ProtectedRoute';
 import RoleGuard from './components/protected/RoleGuard';
@@ -22,7 +21,6 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-        <Toaster position="top-right" />
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/unauthorized" element={<UnauthorizedPage />} />

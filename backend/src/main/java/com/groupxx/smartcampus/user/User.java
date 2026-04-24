@@ -1,5 +1,6 @@
 package com.groupxx.smartcampus.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,8 +24,10 @@ public class User {
     private String email;
     private String avatar;
     private Role role;
-    private String provider; // e.g., "google"
+    private String provider; // "google" or "local"
     private String googleId;
+    @JsonIgnore
+    private String passwordHash;
 
     @CreatedDate
     private LocalDateTime createdAt;

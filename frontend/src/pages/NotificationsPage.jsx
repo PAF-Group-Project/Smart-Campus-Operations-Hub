@@ -1,24 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { Bell, Check, Trash2, CheckCircle2 } from 'lucide-react';
+import {
+  createTestNotification,
+  deleteNotification,
+  fetchMyNotifications,
+  markAllNotificationsAsRead,
+  markNotificationAsRead
+} from '../services/notificationService';
 
 const NotificationsPage = () => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
 
   const fetchNotifications = async () => {
+    setError('');
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:8080/api/v1/notifications/my', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      const data = await response.json();
-      if (data.success) {
-        setNotifications(data.data);
-      }
+      const data = await fetchMyNotifications();
+      setNotifications(data);
     } catch (error) {
       console.error('Error fetching notifications:', error);
+      setError('Failed to load notifications.');
     } finally {
       setLoading(false);
     }
@@ -30,66 +33,53 @@ const NotificationsPage = () => {
 
   const handleMarkAsRead = async (id) => {
     try {
-      const token = localStorage.getItem('token');
-      await fetch(`http://localhost:8080/api/v1/notifications/${id}/read`, {
-        method: 'PATCH',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      await markNotificationAsRead(id);
       setNotifications(notifications.map(notif => 
         notif.id === id ? { ...notif, isRead: true } : notif
       ));
     } catch (error) {
       console.error('Error marking as read:', error);
+      setError('Failed to mark notification as read.');
     }
   };
 
   const handleMarkAllAsRead = async () => {
+    setBusy(true);
+    setError('');
     try {
-      const token = localStorage.getItem('token');
-      await fetch('http://localhost:8080/api/v1/notifications/read-all', {
-        method: 'PATCH',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      await markAllNotificationsAsRead();
       setNotifications(notifications.map(notif => ({ ...notif, isRead: true })));
     } catch (error) {
       console.error('Error marking all as read:', error);
+      setError('Failed to mark all notifications as read.');
+    } finally {
+      setBusy(false);
     }
   };
 
   const handleDelete = async (id) => {
     try {
-      const token = localStorage.getItem('token');
-      await fetch(`http://localhost:8080/api/v1/notifications/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      await deleteNotification(id);
       setNotifications(notifications.filter(notif => notif.id !== id));
     } catch (error) {
       console.error('Error deleting notification:', error);
+      setError('Failed to delete notification.');
     }
   };
 
   const generateTestNotification = async () => {
+    setBusy(true);
+    setError('');
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:8080/api/v1/notifications/test', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      const data = await response.json();
-      if (data.success) {
-        setNotifications([data.data, ...notifications]);
+      const created = await createTestNotification();
+      if (created) {
+        setNotifications([created, ...notifications]);
       }
     } catch (error) {
       console.error('Error generating notification:', error);
+      setError('Failed to create test notification.');
+    } finally {
+      setBusy(false);
     }
   };
 
@@ -114,18 +104,20 @@ const NotificationsPage = () => {
             Notifications
           </h1>
           <p className="text-slate-500 mt-1">Stay updated with your campus activities</p>
+          {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
         </div>
         
         <div className="flex gap-3">
           <button 
             onClick={generateTestNotification}
+            disabled={busy}
             className="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
           >
             Create Test Alert
           </button>
           <button 
             onClick={handleMarkAllAsRead}
-            disabled={!notifications.some(n => !n.isRead)}
+            disabled={busy || !notifications.some(n => !n.isRead)}
             className="px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm flex items-center gap-2"
           >
             <CheckCircle2 size={16} />
@@ -148,7 +140,7 @@ const NotificationsPage = () => {
             {notifications.map((notif) => (
               <div 
                 key={notif.id} 
-                className={`p-5 flex gap-4 transition-colors hover:bg-slate-50 ${!notif.isRead ? 'bg-blue-50/30' : 'bg-white'}`}
+                className={`group p-5 flex gap-4 transition-colors hover:bg-slate-50 ${!notif.isRead ? 'bg-blue-50/30' : 'bg-white'}`}
               >
                 <div className="flex-shrink-0 mt-1">
                   <div className={`w-2 h-2 rounded-full ${!notif.isRead ? 'bg-primary-500' : 'bg-transparent'}`} />

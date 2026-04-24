@@ -22,14 +22,21 @@ export const AuthProvider = ({ children }) => {
     window.location.href = 'http://localhost:8080/oauth2/authorization/google';
   };
 
+  const loginWithPassword = async ({ email, password }) => {
+    const userData = await api.post('/auth/login', { email, password });
+    setUser(userData);
+    return userData;
+  };
+
+  const registerWithPassword = async ({ name, email, password }) => {
+    const userData = await api.post('/auth/register', { name, email, password });
+    setUser(userData);
+    return userData;
+  };
+
   const logout = async () => {
-    try {
-      await api.post('/auth/logout');
-      setUser(null);
-      window.location.href = '/login';
-    } catch (err) {
-      console.error('Logout failed', err);
-    }
+    setUser(null);
+    window.location.href = 'http://localhost:8080/api/v1/auth/logout';
   };
 
   useEffect(() => {
@@ -37,7 +44,18 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, fetchUser }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        login,
+        loginGoogle: login,
+        loginWithPassword,
+        registerWithPassword,
+        logout,
+        fetchUser
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
