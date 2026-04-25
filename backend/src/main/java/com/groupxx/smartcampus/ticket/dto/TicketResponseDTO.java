@@ -1,28 +1,15 @@
-package com.groupxx.smartcampus.ticket;
+package com.groupxx.smartcampus.ticket.dto;
 
 import com.groupxx.smartcampus.ticket.enums.Category;
 import com.groupxx.smartcampus.ticket.enums.Priority;
 import com.groupxx.smartcampus.ticket.enums.TicketStatus;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Document(collection = "tickets")
-public class Ticket {
-    @Id
+public class TicketResponseDTO {
     private String id;
     private String title;
     private String description;
@@ -40,25 +27,15 @@ public class Ticket {
     private String rejectionReason;
     private String resolutionNotes;
 
-    @Builder.Default
-    private List<Attachment> attachments = new ArrayList<>();
-    
-    @Builder.Default
-    private List<Comment> comments = new ArrayList<>();
-    
-    @Builder.Default
-    private List<StatusHistory> history = new ArrayList<>();
+    private List<AttachmentDTO> attachments;
+    private List<CommentDTO> comments;
+    private List<StatusHistoryDTO> history;
 
-    @CreatedDate
     private LocalDateTime createdAt;
-    @LastModifiedDate
     private LocalDateTime updatedAt;
 
     @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class Attachment {
+    public static class AttachmentDTO {
         private String name;
         private String url;
         private String contentType;
@@ -66,24 +43,17 @@ public class Ticket {
     }
 
     @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class Comment {
+    public static class CommentDTO {
         private String id;
         private String content;
         private String authorId;
         private String authorName;
-        private String authorRole; // STUDENT, ADMIN, TECHNICIAN
+        private String authorRole;
         private LocalDateTime createdAt;
-        private LocalDateTime updatedAt;
     }
 
     @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class StatusHistory {
+    public static class StatusHistoryDTO {
         private TicketStatus status;
         private String changedBy;
         private String note;
