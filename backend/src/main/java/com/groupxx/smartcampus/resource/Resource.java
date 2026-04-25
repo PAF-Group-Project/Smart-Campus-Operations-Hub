@@ -1,6 +1,7 @@
 package com.groupxx.smartcampus.resource;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.data.annotation.CreatedDate;
@@ -22,20 +23,29 @@ public class Resource {
     @NotNull(message = "Type is required")
     private ResourceType type;
 
-    private Integer capacity; // nullable for equipment
+    @Min(value = 1, message = "Capacity must be at least 1")
+    private Integer capacity; // nullable for EQUIPMENT
 
     @NotBlank(message = "Location is required")
     private String location;
 
+    private String building;
+
+    private Integer floor;
+
     @NotNull(message = "Status is required")
-    private ResourceStatus status;
+    private ResourceStatus status = ResourceStatus.ACTIVE;
 
     @Valid
     private List<AvailabilityWindow> availabilityWindows;
 
     private String description;
-    
+
     private String imageUrl;
+
+    private List<String> amenities;
+
+    private String createdBy;
 
     @CreatedDate
     private LocalDateTime createdAt;
@@ -54,6 +64,10 @@ public class Resource {
     public void setCapacity(Integer capacity) { this.capacity = capacity; }
     public String getLocation() { return location; }
     public void setLocation(String location) { this.location = location; }
+    public String getBuilding() { return building; }
+    public void setBuilding(String building) { this.building = building; }
+    public Integer getFloor() { return floor; }
+    public void setFloor(Integer floor) { this.floor = floor; }
     public ResourceStatus getStatus() { return status; }
     public void setStatus(ResourceStatus status) { this.status = status; }
     public List<AvailabilityWindow> getAvailabilityWindows() { return availabilityWindows; }
@@ -62,6 +76,10 @@ public class Resource {
     public void setDescription(String description) { this.description = description; }
     public String getImageUrl() { return imageUrl; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+    public List<String> getAmenities() { return amenities; }
+    public void setAmenities(List<String> amenities) { this.amenities = amenities; }
+    public String getCreatedBy() { return createdBy; }
+    public void setCreatedBy(String createdBy) { this.createdBy = createdBy; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
