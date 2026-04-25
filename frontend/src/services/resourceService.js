@@ -1,41 +1,68 @@
 import api from '../api/axios';
 
-const RESOURCE_PATH = '/resources';
+const BASE = '/resources';
+
+const buildParams = (obj) => {
+  const params = new URLSearchParams();
+  Object.entries(obj).forEach(([k, v]) => {
+    if (v !== '' && v !== null && v !== undefined) params.append(k, v);
+  });
+  return params.toString();
+};
 
 export const getAllResources = async (filters = {}) => {
-  const params = new URLSearchParams();
-  if (filters.type) params.append('type', filters.type);
-  if (filters.location) params.append('location', filters.location);
-  if (filters.minCapacity) params.append('minCapacity', filters.minCapacity);
-
-  const queryString = params.toString();
-  const response = await api.get(
-    queryString ? `${RESOURCE_PATH}?${queryString}` : RESOURCE_PATH
-  );
-  return response.data;
+  const qs = buildParams(filters);
+  const response = await api.get(qs ? `${BASE}?${qs}` : BASE);
+  return response?.data ?? response;
 };
 
 export const getResourceById = async (id) => {
-  const response = await api.get(`${RESOURCE_PATH}/${id}`);
-  return response.data;
+  const response = await api.get(`${BASE}/${id}`);
+  return response?.data ?? response;
+};
+
+export const searchResources = async (keyword) => {
+  const response = await api.get(`${BASE}/search?q=${encodeURIComponent(keyword)}`);
+  return response?.data ?? response;
+};
+
+export const getResourcesByType = async (type) => {
+  const response = await api.get(`${BASE}/type/${type}`);
+  return response?.data ?? response;
+};
+
+export const getAvailableResources = async () => {
+  const response = await api.get(`${BASE}/available`);
+  return response?.data ?? response;
+};
+
+export const getResourceStats = async () => {
+  const response = await api.get(`${BASE}/stats`);
+  return response?.data ?? response;
 };
 
 export const createResource = async (data) => {
-  const response = await api.post(RESOURCE_PATH, data);
-  return response.data;
+  const response = await api.post(BASE, data);
+  return response?.data ?? response;
 };
 
 export const updateResource = async (id, data) => {
-  const response = await api.put(`${RESOURCE_PATH}/${id}`, data);
-  return response.data;
+  const response = await api.put(`${BASE}/${id}`, data);
+  return response?.data ?? response;
 };
 
-export const updateResourceStatus = async (id, status) => {
-  const response = await api.patch(`${RESOURCE_PATH}/${id}/status`, { status });
-  return response.data;
+export const updateStatus = async (id, status) => {
+  const response = await api.patch(`${BASE}/${id}/status`, { status });
+  return response?.data ?? response;
+};
+
+export const updateResourceStatus = updateStatus;
+
+export const updateAmenities = async (id, amenities) => {
+  const response = await api.patch(`${BASE}/${id}/amenities`, { amenities });
+  return response?.data ?? response;
 };
 
 export const deleteResource = async (id) => {
-  const response = await api.delete(`${RESOURCE_PATH}/${id}`);
-  return response.data;
+  await api.delete(`${BASE}/${id}`);
 };
