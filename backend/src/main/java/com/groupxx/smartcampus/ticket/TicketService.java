@@ -284,12 +284,16 @@ public class TicketService {
     private void processSLAOnFirstResponse(Ticket ticket) {
         if (ticket.getFirstResponseAt() != null) return;
 
+        System.out.println("Processing First Response SLA for ticket: " + ticket.getId());
         LocalDateTime now = LocalDateTime.now();
         ticket.setFirstResponseAt(now);
+        System.out.println("First response set at: " + now);
 
         if (ticket.getCreatedAt() != null) {
+            System.out.println("Ticket created at: " + ticket.getCreatedAt());
             long durationMinutes = Duration.between(ticket.getCreatedAt(), now).toMinutes();
             ticket.setFirstResponseDuration(durationMinutes);
+            System.out.println("Duration minutes: " + durationMinutes);
             
             long threshold = switch (ticket.getPriority()) {
                 case LOW -> 4 * 60;
@@ -300,18 +304,24 @@ public class TicketService {
             };
             
             ticket.setFirstResponseSlaBreached(durationMinutes > threshold);
+            System.out.println("Breached: " + ticket.getFirstResponseSlaBreached());
+        } else {
+            System.out.println("Ticket createdAt is NULL!");
         }
     }
 
     private void processSLAOnResolution(Ticket ticket) {
         if (ticket.getResolvedAt() != null) return;
 
+        System.out.println("Processing Resolution SLA for ticket: " + ticket.getId());
         LocalDateTime now = LocalDateTime.now();
         ticket.setResolvedAt(now);
+        System.out.println("Resolved at: " + now);
 
         if (ticket.getCreatedAt() != null) {
             long durationMinutes = Duration.between(ticket.getCreatedAt(), now).toMinutes();
             ticket.setResolutionDuration(durationMinutes);
+            System.out.println("Resolution duration minutes: " + durationMinutes);
             
             long threshold = switch (ticket.getPriority()) {
                 case LOW -> 48 * 60;
@@ -322,6 +332,9 @@ public class TicketService {
             };
             
             ticket.setResolutionSlaBreached(durationMinutes > threshold);
+            System.out.println("Resolution breached: " + ticket.getResolutionSlaBreached());
+        } else {
+            System.out.println("Ticket createdAt is NULL during resolution!");
         }
     }
 }
