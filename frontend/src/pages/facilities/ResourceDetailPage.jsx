@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import {ArrowLeft, MapPin, Users, Calendar, AlertTriangle, Activity, Wrench, Settings, Edit2, Trash2 } from 'lucide-react';
-import toast from 'react-hot-toast';
 import { getResourceById, deleteResource, updateResource, updateResourceStatus } from '../../services/resourceService';
 import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
@@ -15,6 +14,7 @@ export const ResourceDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [notice, setNotice] = useState({ type: '', message: '' });
   
   const fetchResource = async () => {
     setLoading(true);
@@ -23,7 +23,7 @@ export const ResourceDetailPage = () => {
       const resourceData = data?.data ?? data;
       setResource(resourceData);
     } catch (error) {
-      toast.error('Failed to load facility details');
+      setNotice({ type: 'error', message: 'Failed to load facility details.' });
       navigate('/facilities');
     } finally {
       setLoading(false);
@@ -39,10 +39,10 @@ export const ResourceDetailPage = () => {
       setIsDeleting(true);
       try {
         await deleteResource(id);
-        toast.success('Facility deleted successfully');
+        setNotice({ type: 'success', message: 'Facility deleted successfully.' });
         navigate('/facilities');
       } catch (error) {
-        toast.error('Failed to delete facility');
+        setNotice({ type: 'error', message: 'Failed to delete facility.' });
         setIsDeleting(false);
       }
     }
@@ -51,21 +51,21 @@ export const ResourceDetailPage = () => {
   const handleUpdate = async (data) => {
     try {
       await updateResource(id, data);
-      toast.success('Facility updated successfully');
+      setNotice({ type: 'success', message: 'Facility updated successfully.' });
       setIsEditModalOpen(false);
       fetchResource();
     } catch (error) {
-      toast.error('Failed to update facility');
+      setNotice({ type: 'error', message: 'Failed to update facility.' });
     }
   };
 
   const handleStatusChange = async (newStatus) => {
     try {
       await updateResourceStatus(id, newStatus);
-      toast.success('Status updated successfully');
+      setNotice({ type: 'success', message: 'Status updated successfully.' });
       fetchResource();
     } catch (error) {
-      toast.error('Failed to update status');
+      setNotice({ type: 'error', message: 'Failed to update status.' });
     }
   };
 
@@ -89,6 +89,11 @@ export const ResourceDetailPage = () => {
         </Link>
         <h1 className="text-2xl font-bold text-gray-900">Facility Details</h1>
       </div>
+      {notice.message && (
+        <p className={`mb-4 text-sm ${notice.type === 'error' ? 'text-red-600' : 'text-emerald-600'}`}>
+          {notice.message}
+        </p>
+      )}
 
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-8">
         {resource.imageUrl ? (

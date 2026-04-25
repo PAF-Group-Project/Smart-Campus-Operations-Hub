@@ -1,73 +1,62 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Toaster } from 'react-hot-toast';
 import DashboardLayout from './components/layout/DashboardLayout';
+import ProtectedRoute from './components/protected/ProtectedRoute';
+import RoleGuard from './components/protected/RoleGuard';
+import { AuthProvider } from './context/AuthContext';
+import LoginPage from './pages/LoginPage';
+import UnauthorizedPage from './pages/UnauthorizedPage';
+import UserManagementPage from './pages/UserManagementPage';
+import NotificationsPage from './pages/NotificationsPage';
+import DashboardPage from './pages/DashboardPage';
+import NotificationPreferencesPage from './pages/NotificationPreferencesPage';
 
-// Ticket Module Pages
-import StudentTicketList from './features/ticket/pages/StudentTicketList';
-import StudentCreateTicket from './features/ticket/pages/StudentCreateTicket';
-import StudentTicketDetails from './features/ticket/pages/StudentTicketDetails';
-import AdminTicketDashboard from './features/ticket/pages/AdminTicketDashboard';
-import AdminTicketDetails from './features/ticket/pages/AdminTicketDetails';
-import TechnicianWorklist from './features/ticket/pages/TechnicianWorklist';
-import TechnicianTicketDetails from './features/ticket/pages/TechnicianTicketDetails';
-
-// Facilities / Resource Pages
+// Feature Pages
 import { ResourceListPage } from './pages/facilities/ResourceListPage';
 import { ResourceDetailPage } from './pages/facilities/ResourceDetailPage';
 
 // Placeholder Pages
-const Dashboard = () => <div className="p-6 bg-white rounded-xl shadow-sm border border-slate-100 font-sans"><h2 className="text-2xl font-bold mb-4">Dashboard Overview</h2><p className="text-slate-600">Welcome to the Smart Campus Operations Hub.</p></div>;
 const Bookings = () => <div className="p-6 bg-white rounded-xl shadow-sm border border-slate-100">Bookings Placeholder</div>;
-const Notifications = () => <div className="p-6 bg-white rounded-xl shadow-sm border border-slate-100">Notifications Placeholder</div>;
-const Users = () => <div className="p-6 bg-white rounded-xl shadow-sm border border-slate-100">Users Placeholder</div>;
-const Settings = () => <div className="p-6 bg-white rounded-xl shadow-sm border border-slate-100">Settings Placeholder</div>;
 
 function App() {
   return (
-    <Router>
-      <Toaster position="top-right" />
-      <Routes>
-        <Route 
-          path="/*" 
-          element={
-            <DashboardLayout>
-              <Routes>
-                <Route path="dashboard" element={<Dashboard />} />
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
-                {/* Student Routes */}
-                <Route path="student/tickets" element={<StudentTicketList />} />
-                <Route path="student/tickets/new" element={<StudentCreateTicket />} />
-                <Route path="student/tickets/:id" element={<StudentTicketDetails />} />
+          <Route 
+            path="/*" 
+            element={
+              <ProtectedRoute>
+                <DashboardLayout>
+                  <Routes>
+                    <Route path="dashboard" element={<DashboardPage />} />
+                    <Route path="facilities" element={<ResourceListPage />} />
+                    <Route path="facilities/:id" element={<ResourceDetailPage />} />
+                    <Route path="notifications" element={<NotificationsPage />} />
+                    <Route path="settings/notifications" element={<NotificationPreferencesPage />} />
 
-                {/* Admin Routes */}
-                <Route path="admin/tickets" element={<AdminTicketDashboard />} />
-                <Route path="admin/tickets/:id" element={<AdminTicketDetails />} />
+                    <Route 
+                      path="users" 
+                      element={
+                        <RoleGuard allowedRoles={['ADMIN']}>
+                          <UserManagementPage />
+                        </RoleGuard>
+                      } 
+                    />
 
-                {/* Technician Routes */}
-                <Route path="technician/tickets" element={<TechnicianWorklist />} />
-                <Route path="technician/tickets/:id" element={<TechnicianTicketDetails />} />
-
-                {/* Facilities Routes */}
-                <Route path="facilities" element={<ResourceListPage />} />
-                <Route path="facilities/:id" element={<ResourceDetailPage />} />
-
-                {/* Bookings */}
-                <Route path="bookings" element={<Bookings />} />
-
-                {/* Shared navigation routes */}
-                <Route path="tickets" element={<Navigate to="/student/tickets" replace />} />
-                <Route path="notifications" element={<Notifications />} />
-                <Route path="users" element={<Users />} />
-                <Route path="settings" element={<Settings />} />
-
-                <Route path="/" element={<Navigate to="/dashboard" replace />} />
-              </Routes>
-            </DashboardLayout>
-          } 
-        />
-      </Routes>
-    </Router>
+                    <Route path="bookings" element={<Bookings />} />
+                    <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                  </Routes>
+                </DashboardLayout>
+              </ProtectedRoute>
+            } 
+          />
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 }
 
