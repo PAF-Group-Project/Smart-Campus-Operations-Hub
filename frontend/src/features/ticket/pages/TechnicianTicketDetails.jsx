@@ -5,6 +5,7 @@ import ticketApi from '../../../api/ticketApi';
 import StatusBadge from '../components/StatusBadge';
 import StatusTimeline from '../components/StatusTimeline';
 import CommentList from '../components/CommentList';
+import TicketSLAInfo from '../components/TicketSLAInfo';
 
 const TECH_ID = "TECH001";
 const TECH_NAME = "Mike Johnson";
@@ -187,6 +188,8 @@ const TechnicianTicketDetails = () => {
 
                 {/* Technician Actions Panel */}
                 <div className="lg:col-span-5 space-y-6">
+                    <TicketSLAInfo ticket={ticket} />
+                    
                     <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/20 space-y-8 sticky top-6">
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-2xl bg-slate-900 flex items-center justify-center">

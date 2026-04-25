@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -113,6 +114,8 @@ public class TicketService {
                 .timestamp(LocalDateTime.now())
                 .build());
         
+        processSLAOnFirstResponse(ticket);
+        
         return mapToResponse(ticketRepository.save(ticket));
     }
 
@@ -152,6 +155,10 @@ public class TicketService {
                 .note("Update by technician: " + (update.getResolutionNotes() != null ? update.getResolutionNotes() : ""))
                 .timestamp(LocalDateTime.now())
                 .build());
+
+        if (update.getStatus() == TicketStatus.RESOLVED || update.getStatus() == TicketStatus.CLOSED) {
+            processSLAOnResolution(ticket);
+        }
         
         return mapToResponse(ticketRepository.save(ticket));
     }
@@ -170,6 +177,11 @@ public class TicketService {
                 .build();
         
         ticket.getComments().add(comment);
+
+        if (!"STUDENT".equals(request.getAuthorRole())) {
+            processSLAOnFirstResponse(ticket);
+        }
+
         return mapToResponse(ticketRepository.save(ticket));
     }
 
@@ -230,6 +242,14 @@ public class TicketService {
         response.setCreatedAt(ticket.getCreatedAt());
         response.setUpdatedAt(ticket.getUpdatedAt());
 
+        // SLA Fields
+        response.setFirstResponseAt(ticket.getFirstResponseAt());
+        response.setResolvedAt(ticket.getResolvedAt());
+        response.setFirstResponseDuration(ticket.getFirstResponseDuration());
+        response.setResolutionDuration(ticket.getResolutionDuration());
+        response.setFirstResponseSlaBreached(ticket.getFirstResponseSlaBreached());
+        response.setResolutionSlaBreached(ticket.getResolutionSlaBreached());
+
         response.setAttachments(ticket.getAttachments().stream().map(a -> {
             TicketResponseDTO.AttachmentDTO dto = new TicketResponseDTO.AttachmentDTO();
             dto.setName(a.getName());
@@ -260,5 +280,48 @@ public class TicketService {
         }).collect(Collectors.toList()));
 
         return response;
+    }
+    private void processSLAOnFirstResponse(Ticket ticket) {
+        if (ticket.getFirstResponseAt() != null) return;
+
+        LocalDateTime now = LocalDateTime.now();
+        ticket.setFirstResponseAt(now);
+
+        if (ticket.getCreatedAt() != null) {
+            long durationMinutes = Duration.between(ticket.getCreatedAt(), now).toMinutes();
+            ticket.setFirstResponseDuration(durationMinutes);
+            
+            long threshold = switch (ticket.getPriority()) {
+                case LOW -> 4 * 60;
+                case MEDIUM -> 2 * 60;
+                case HIGH -> 30;
+                case URGENT -> 15;
+                default -> 4 * 60;
+            };
+            
+            ticket.setFirstResponseSlaBreached(durationMinutes > threshold);
+        }
+    }
+
+    private void processSLAOnResolution(Ticket ticket) {
+        if (ticket.getResolvedAt() != null) return;
+
+        LocalDateTime now = LocalDateTime.now();
+        ticket.setResolvedAt(now);
+
+        if (ticket.getCreatedAt() != null) {
+            long durationMinutes = Duration.between(ticket.getCreatedAt(), now).toMinutes();
+            ticket.setResolutionDuration(durationMinutes);
+            
+            long threshold = switch (ticket.getPriority()) {
+                case LOW -> 48 * 60;
+                case MEDIUM -> 24 * 60;
+                case HIGH -> 8 * 60;
+                case URGENT -> 2 * 60;
+                default -> 48 * 60;
+            };
+            
+            ticket.setResolutionSlaBreached(durationMinutes > threshold);
+        }
     }
 }

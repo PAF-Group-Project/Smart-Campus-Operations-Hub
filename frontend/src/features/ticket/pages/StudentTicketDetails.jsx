@@ -5,6 +5,7 @@ import ticketApi from '../../../api/ticketApi';
 import StatusBadge from '../components/StatusBadge';
 import StatusTimeline from '../components/StatusTimeline';
 import CommentList from '../components/CommentList';
+import TicketSLAInfo from '../components/TicketSLAInfo';
 
 const STUDENT_ID = "STU001";
 const STUDENT_NAME = "John Doe";
@@ -223,6 +224,8 @@ const StudentTicketDetails = () => {
 
                 {/* Sidebar - Timeline & Info */}
                 <div className="space-y-6">
+                    <TicketSLAInfo ticket={ticket} />
+                    
                     <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-6">
                         <h3 className="font-bold text-slate-900">Technician Information</h3>
                         {ticket.assignedTechnicianId ? (

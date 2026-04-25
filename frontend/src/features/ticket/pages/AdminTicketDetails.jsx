@@ -5,6 +5,7 @@ import ticketApi from '../../../api/ticketApi';
 import StatusBadge from '../components/StatusBadge';
 import StatusTimeline from '../components/StatusTimeline';
 import CommentList from '../components/CommentList';
+import TicketSLAInfo from '../components/TicketSLAInfo';
 
 const ADMIN_ID = "ADM001";
 const ADMIN_NAME = "Admin User";
@@ -229,6 +230,8 @@ const AdminTicketDetails = () => {
 
                 {/* Right Column - Decision Actions */}
                 <div className="lg:col-span-4 space-y-6">
+                    <TicketSLAInfo ticket={ticket} />
+                    
                     <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm space-y-6 sticky top-6">
                         <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight">Decisions & Workflow</h3>
                         
