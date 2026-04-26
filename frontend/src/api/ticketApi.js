@@ -30,8 +30,8 @@ const ticketApi = {
     
     addComment: (id, commentData) => api.post(`${TICKET_BASE}/${id}/comments`, commentData),
     
-    deleteComment: (ticketId, commentId, userId) => 
-        api.delete(`${TICKET_BASE}/${ticketId}/comments/${commentId}?userId=${userId}`),
+    deleteComment: (ticketId, commentId) => 
+        api.delete(`${TICKET_BASE}/${ticketId}/comments/${commentId}`),
 
     updateComment: (ticketId, commentId, userId, newContent) => 
         api.patch(`${TICKET_BASE}/${ticketId}/comments/${commentId}`, { content: newContent, userId })

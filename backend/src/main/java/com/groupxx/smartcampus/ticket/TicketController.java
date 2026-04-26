@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+import com.groupxx.smartcampus.common.ApiResponse;
 import com.groupxx.smartcampus.user.User;
 import com.groupxx.smartcampus.user.UserRepository;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,7 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 @RestController
-@RequestMapping("/api/tickets")
+@RequestMapping("/api/v1/tickets")
 @RequiredArgsConstructor
 public class TicketController {
 
@@ -31,110 +32,111 @@ public class TicketController {
 
     @PostMapping(consumes = {"multipart/form-data"})
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
-    public ResponseEntity<TicketResponseDTO> createTicket(
+    public ResponseEntity<ApiResponse<TicketResponseDTO>> createTicket(
             @RequestPart("ticket") @Valid TicketRequestDTO ticketRequest,
             @RequestPart(value = "attachments", required = false) List<MultipartFile> attachments,
             Authentication authentication) {
         User user = getAuthenticatedUser(authentication);
         ticketRequest.setReporterId(user.getId());
         ticketRequest.setReporterName(user.getName());
-        return new ResponseEntity<>(ticketService.createTicket(ticketRequest, attachments), HttpStatus.CREATED);
+        TicketResponseDTO created = ticketService.createTicket(ticketRequest, attachments);
+        return new ResponseEntity<>(ApiResponse.success(created, "Ticket created successfully"), HttpStatus.CREATED);
     }
 
     @GetMapping
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<List<TicketResponseDTO>> getAllTickets() {
-        return ResponseEntity.ok(ticketService.getAllTickets());
+    public ResponseEntity<ApiResponse<List<TicketResponseDTO>>> getAllTickets() {
+        return ResponseEntity.ok(ApiResponse.success(ticketService.getAllTickets(), "All tickets fetched"));
     }
 
     @GetMapping("/my")
     @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<List<TicketResponseDTO>> getMyTickets(Authentication authentication) {
+    public ResponseEntity<ApiResponse<List<TicketResponseDTO>>> getMyTickets(Authentication authentication) {
         User user = getAuthenticatedUser(authentication);
-        return ResponseEntity.ok(ticketService.getTicketsByStudent(user.getId()));
+        return ResponseEntity.ok(ApiResponse.success(ticketService.getTicketsByStudent(user.getId()), "Your tickets fetched"));
     }
 
     @GetMapping("/assigned")
     @PreAuthorize("hasAuthority('TECHNICIAN')")
-    public ResponseEntity<List<TicketResponseDTO>> getAssignedTickets(Authentication authentication) {
+    public ResponseEntity<ApiResponse<List<TicketResponseDTO>>> getAssignedTickets(Authentication authentication) {
         User user = getAuthenticatedUser(authentication);
-        return ResponseEntity.ok(ticketService.getTicketsByTechnician(user.getId()));
+        return ResponseEntity.ok(ApiResponse.success(ticketService.getTicketsByTechnician(user.getId()), "Assigned tickets fetched"));
     }
 
     @GetMapping("/student/{studentId}")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<List<TicketResponseDTO>> getStudentTickets(@PathVariable String studentId) {
-        return ResponseEntity.ok(ticketService.getTicketsByStudent(studentId));
+    public ResponseEntity<ApiResponse<List<TicketResponseDTO>>> getStudentTickets(@PathVariable String studentId) {
+        return ResponseEntity.ok(ApiResponse.success(ticketService.getTicketsByStudent(studentId), "Student tickets fetched"));
     }
 
     @GetMapping("/technician/{technicianId}")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<List<TicketResponseDTO>> getTechnicianTickets(@PathVariable String technicianId) {
-        return ResponseEntity.ok(ticketService.getTicketsByTechnician(technicianId));
+    public ResponseEntity<ApiResponse<List<TicketResponseDTO>>> getTechnicianTickets(@PathVariable String technicianId) {
+        return ResponseEntity.ok(ApiResponse.success(ticketService.getTicketsByTechnician(technicianId), "Technician tickets fetched"));
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<TicketResponseDTO> getTicketById(
+    public ResponseEntity<ApiResponse<TicketResponseDTO>> getTicketById(
             @PathVariable String id, 
             Authentication authentication) {
         User user = getAuthenticatedUser(authentication);
-        return ResponseEntity.ok(ticketService.getTicketByIdAndUser(id, user));
+        return ResponseEntity.ok(ApiResponse.success(ticketService.getTicketByIdAndUser(id, user), "Ticket fetched successfully"));
     }
 
     @PatchMapping("/{id}/assign")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<TicketResponseDTO> assignTechnician(
+    public ResponseEntity<ApiResponse<TicketResponseDTO>> assignTechnician(
             @PathVariable String id, @RequestBody AdminActionDTO action) {
-        return ResponseEntity.ok(ticketService.assignTechnician(id, action));
+        return ResponseEntity.ok(ApiResponse.success(ticketService.assignTechnician(id, action), "Technician assigned"));
     }
 
     @PatchMapping("/{id}/reject")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<TicketResponseDTO> rejectTicket(
+    public ResponseEntity<ApiResponse<TicketResponseDTO>> rejectTicket(
             @PathVariable String id, @RequestBody AdminActionDTO action) {
-        return ResponseEntity.ok(ticketService.rejectTicket(id, action));
+        return ResponseEntity.ok(ApiResponse.success(ticketService.rejectTicket(id, action), "Ticket rejected"));
     }
 
     @PatchMapping("/{id}/status")
     @PreAuthorize("hasAuthority('TECHNICIAN')")
-    public ResponseEntity<TicketResponseDTO> updateStatus(
+    public ResponseEntity<ApiResponse<TicketResponseDTO>> updateStatus(
             @PathVariable String id, @RequestBody TechnicianUpdateDTO update, Authentication authentication) {
         User user = getAuthenticatedUser(authentication);
-        return ResponseEntity.ok(ticketService.updateTechnicianStatus(id, update, user.getId()));
+        return ResponseEntity.ok(ApiResponse.success(ticketService.updateTechnicianStatus(id, update, user.getId()), "Status updated"));
     }
 
     @PostMapping("/{id}/comments")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<TicketResponseDTO> addComment(
+    public ResponseEntity<ApiResponse<TicketResponseDTO>> addComment(
             @PathVariable String id, @RequestBody @Valid CommentRequestDTO commentRequest, Authentication authentication) {
         User user = getAuthenticatedUser(authentication);
         commentRequest.setAuthorId(user.getId());
         commentRequest.setAuthorName(user.getName());
         commentRequest.setAuthorRole(user.getRole().name());
-        return ResponseEntity.ok(ticketService.addComment(id, commentRequest));
+        return ResponseEntity.ok(ApiResponse.success(ticketService.addComment(id, commentRequest), "Comment added"));
     }
 
     @DeleteMapping("/{ticketId}/comments/{commentId}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Void> deleteComment(
+    public ResponseEntity<ApiResponse<Void>> deleteComment(
             @PathVariable String ticketId, 
             @PathVariable String commentId, 
             Authentication authentication) {
         User user = getAuthenticatedUser(authentication);
         ticketService.deleteComment(ticketId, commentId, user.getId());
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(ApiResponse.success(null, "Comment deleted"));
     }
 
     @PatchMapping("/{ticketId}/comments/{commentId}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<TicketResponseDTO> updateComment(
+    public ResponseEntity<ApiResponse<TicketResponseDTO>> updateComment(
             @PathVariable String ticketId,
             @PathVariable String commentId,
             @RequestBody CommentRequestDTO updateRequest,
             Authentication authentication) {
         User user = getAuthenticatedUser(authentication);
-        return ResponseEntity.ok(ticketService.updateComment(ticketId, commentId, user.getId(), updateRequest.getContent()));
+        return ResponseEntity.ok(ApiResponse.success(ticketService.updateComment(ticketId, commentId, user.getId(), updateRequest.getContent()), "Comment updated"));
     }
 
 }

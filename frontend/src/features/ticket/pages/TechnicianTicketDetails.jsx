@@ -163,7 +163,7 @@ const TechnicianTicketDetails = () => {
                             <CommentList 
                                 comments={ticket.comments || []} 
                                 currentUserId={user?.id}
-                                onDelete={(cid) => ticketApi.deleteComment(id, cid, user?.id).then(fetchTicket)}
+                                onDelete={(cid) => ticketApi.deleteComment(id, cid).then(fetchTicket)}
                                 onUpdate={handleUpdateComment}
                             />
                             <form onSubmit={handleAddComment} className="mt-6 flex gap-3">

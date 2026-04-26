@@ -62,7 +62,7 @@ const StudentTicketDetails = () => {
         if (!window.confirm("Are you sure you want to delete this comment?")) return;
         if (!user) return;
         try {
-            await ticketApi.deleteComment(id, commentId, user.id);
+            await ticketApi.deleteComment(id, commentId);
             fetchTicket();
         } catch (error) {
             alert("Failed to delete comment");
