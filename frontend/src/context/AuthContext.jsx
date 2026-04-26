@@ -11,8 +11,8 @@ export const AuthProvider = ({ children }) => {
         
         return {
             id: 'USR-101',
-            email: 'student@sliit.lk',
-            name: 'John Doe',
+            email: 'akila@smartcampus.com',
+            name: 'Akila',
             role: 'USER'
         };
     });
@@ -38,8 +38,8 @@ export const AuthProvider = ({ children }) => {
         } else {
             newUser = {
                 id: 'USR-101',
-                email: 'student@sliit.lk',
-                name: 'John Doe',
+                email: 'akila@smartcampus.com',
+                name: 'Akila',
                 role: 'USER'
             };
         }
@@ -63,8 +63,8 @@ export const AuthProvider = ({ children }) => {
     const setUserRole = () => {
         const normalUser = {
             id: 'USR-101',
-            email: 'student@sliit.lk',
-            name: 'John Doe',
+            email: 'akila@smartcampus.com',
+            name: 'Akila',
             role: 'USER'
         };
         setUser(normalUser);
