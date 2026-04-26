@@ -1,20 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Search, Filter, Calendar, MapPin } from 'lucide-react';
+import { useAuth } from '../../../context/AuthContext';
 import ticketApi from '../../../api/ticketApi';
 import StatusBadge from '../components/StatusBadge';
 
-const STUDENT_ID = "STU001"; // Mock student ID for now
-
 const StudentTicketList = () => {
+    const { user } = useAuth();
     const [tickets, setTickets] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
         const fetchTickets = async () => {
+            if (!user) return;
             try {
-                const response = await ticketApi.getStudentTickets(STUDENT_ID);
+                const response = await ticketApi.getStudentTickets();
                 setTickets(response.data);
             } catch (error) {
                 console.error("Error fetching tickets:", error);
@@ -23,7 +24,7 @@ const StudentTicketList = () => {
             }
         };
         fetchTickets();
-    }, []);
+    }, [user]);
 
     const filteredTickets = tickets.filter(t => 
         t.title.toLowerCase().includes(searchTerm.toLowerCase()) ||

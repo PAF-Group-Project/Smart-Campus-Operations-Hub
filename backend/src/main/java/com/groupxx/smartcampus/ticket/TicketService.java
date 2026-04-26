@@ -3,12 +3,14 @@ package com.groupxx.smartcampus.ticket;
 import com.groupxx.smartcampus.exception.BusinessRuleException;
 import com.groupxx.smartcampus.exception.ResourceNotFoundException;
 import com.groupxx.smartcampus.ticket.dto.*;
+import com.groupxx.smartcampus.user.User;
 import com.groupxx.smartcampus.ticket.enums.TicketStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -95,9 +97,20 @@ public class TicketService {
         Ticket ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Ticket not found with id: " + id));
         
-        // Students (USER role) cannot view CLOSED tickets
-        if ("USER".equals(role) && ticket.getStatus() == TicketStatus.CLOSED) {
-            throw new BusinessRuleException("Closed tickets cannot be viewed by students");
+        return mapToResponse(ticket);
+    }
+
+    public TicketResponseDTO getTicketByIdAndUser(String id, User user) {
+        Ticket ticket = ticketRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
+        
+        // Ownership check
+        boolean isAdmin = user.getRole().name().equals("ADMIN");
+        boolean isReporter = ticket.getReporterId().equals(user.getId());
+        boolean isAssignedTech = ticket.getAssignedTechnicianId() != null && ticket.getAssignedTechnicianId().equals(user.getId());
+        
+        if (!isAdmin && !isReporter && !isAssignedTech) {
+            throw new BusinessRuleException("You do not have permission to view this ticket");
         }
         
         return mapToResponse(ticket);
@@ -117,6 +130,8 @@ public class TicketService {
                 .note("Assigned to technician: " + action.getTechnicianName())
                 .timestamp(LocalDateTime.now())
                 .build());
+        
+        processSLAOnFirstResponse(ticket);
         
         return mapToResponse(ticketRepository.save(ticket));
     }
@@ -142,9 +157,14 @@ public class TicketService {
         return mapToResponse(ticketRepository.save(ticket));
     }
 
-    public TicketResponseDTO updateTechnicianStatus(String id, TechnicianUpdateDTO update) {
+    public TicketResponseDTO updateTechnicianStatus(String id, TechnicianUpdateDTO update, String technicianId) {
         Ticket ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
+        
+        // Verify technician is assigned to this ticket
+        if (!technicianId.equals(ticket.getAssignedTechnicianId())) {
+            throw new BusinessRuleException("You can only update status for tickets assigned to you");
+        }
         
         ticket.setStatus(update.getStatus());
         if (update.getResolutionNotes() != null) {
@@ -157,6 +177,10 @@ public class TicketService {
                 .note("Update by technician: " + (update.getResolutionNotes() != null ? update.getResolutionNotes() : ""))
                 .timestamp(LocalDateTime.now())
                 .build());
+
+        if (update.getStatus() == TicketStatus.RESOLVED || update.getStatus() == TicketStatus.CLOSED) {
+            processSLAOnResolution(ticket);
+        }
         
         return mapToResponse(ticketRepository.save(ticket));
     }
@@ -175,6 +199,7 @@ public class TicketService {
                 .build();
         
         ticket.getComments().add(comment);
+
         return mapToResponse(ticketRepository.save(ticket));
     }
 
@@ -235,6 +260,14 @@ public class TicketService {
         response.setCreatedAt(ticket.getCreatedAt());
         response.setUpdatedAt(ticket.getUpdatedAt());
 
+        // SLA Fields
+        response.setFirstResponseAt(ticket.getFirstResponseAt());
+        response.setResolvedAt(ticket.getResolvedAt());
+        response.setFirstResponseDuration(ticket.getFirstResponseDuration());
+        response.setResolutionDuration(ticket.getResolutionDuration());
+        response.setFirstResponseSlaBreached(ticket.getFirstResponseSlaBreached());
+        response.setResolutionSlaBreached(ticket.getResolutionSlaBreached());
+
         response.setAttachments(ticket.getAttachments().stream().map(a -> {
             TicketResponseDTO.AttachmentDTO dto = new TicketResponseDTO.AttachmentDTO();
             dto.setName(a.getName());
@@ -265,5 +298,61 @@ public class TicketService {
         }).collect(Collectors.toList()));
 
         return response;
+    }
+    private void processSLAOnFirstResponse(Ticket ticket) {
+        if (ticket.getFirstResponseAt() != null) return;
+
+        System.out.println("Processing First Response SLA for ticket: " + ticket.getId());
+        LocalDateTime now = LocalDateTime.now();
+        ticket.setFirstResponseAt(now);
+        System.out.println("First response set at: " + now);
+
+        if (ticket.getCreatedAt() != null) {
+            System.out.println("Ticket created at: " + ticket.getCreatedAt());
+            long durationMinutes = Duration.between(ticket.getCreatedAt(), now).toMinutes();
+            ticket.setFirstResponseDuration(durationMinutes);
+            System.out.println("Duration minutes: " + durationMinutes);
+            
+            long threshold = switch (ticket.getPriority()) {
+                case LOW -> 4 * 60;
+                case MEDIUM -> 2 * 60;
+                case HIGH -> 30;
+                case URGENT -> 15;
+                default -> 4 * 60;
+            };
+            
+            ticket.setFirstResponseSlaBreached(durationMinutes > threshold);
+            System.out.println("Breached: " + ticket.getFirstResponseSlaBreached());
+        } else {
+            System.out.println("Ticket createdAt is NULL!");
+        }
+    }
+
+    private void processSLAOnResolution(Ticket ticket) {
+        if (ticket.getResolvedAt() != null) return;
+
+        System.out.println("Processing Resolution SLA for ticket: " + ticket.getId());
+        LocalDateTime now = LocalDateTime.now();
+        ticket.setResolvedAt(now);
+        System.out.println("Resolved at: " + now);
+
+        if (ticket.getCreatedAt() != null) {
+            long durationMinutes = Duration.between(ticket.getCreatedAt(), now).toMinutes();
+            ticket.setResolutionDuration(durationMinutes);
+            System.out.println("Resolution duration minutes: " + durationMinutes);
+            
+            long threshold = switch (ticket.getPriority()) {
+                case LOW -> 48 * 60;
+                case MEDIUM -> 24 * 60;
+                case HIGH -> 8 * 60;
+                case URGENT -> 2 * 60;
+                default -> 48 * 60;
+            };
+            
+            ticket.setResolutionSlaBreached(durationMinutes > threshold);
+            System.out.println("Resolution breached: " + ticket.getResolutionSlaBreached());
+        } else {
+            System.out.println("Ticket createdAt is NULL during resolution!");
+        }
     }
 }

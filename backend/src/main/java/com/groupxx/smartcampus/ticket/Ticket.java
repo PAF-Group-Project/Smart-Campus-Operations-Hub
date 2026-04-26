@@ -54,6 +54,14 @@ public class Ticket {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
+    // SLA Fields
+    private LocalDateTime firstResponseAt;
+    private LocalDateTime resolvedAt;
+    private Long firstResponseDuration; // in minutes
+    private Long resolutionDuration; // in minutes
+    private Boolean firstResponseSlaBreached;
+    private Boolean resolutionSlaBreached;
+
     @Data
     @Builder
     @NoArgsConstructor

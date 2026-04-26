@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, MapPin, Calendar, User, Tag, Send, AlertCircle } from 'lucide-react';
+import { ArrowLeft, MapPin, Calendar, User, Tag, Send, AlertCircle, X } from 'lucide-react';
 import ticketApi from '../../../api/ticketApi';
 import StatusBadge from '../components/StatusBadge';
 import StatusTimeline from '../components/StatusTimeline';
 import CommentList from '../components/CommentList';
+import TicketSLAInfo from '../components/TicketSLAInfo';
 
-const STUDENT_ID = "STU001";
-const STUDENT_NAME = "John Doe";
+import { useAuth } from '../../../context/AuthContext';
 
 const StudentTicketDetails = () => {
+    const { user } = useAuth();
     const { id } = useParams();
     const navigate = useNavigate();
     const [ticket, setTicket] = useState(null);
@@ -17,14 +18,16 @@ const StudentTicketDetails = () => {
     const [error, setError] = useState(null);
     const [newComment, setNewComment] = useState('');
     const [sendingComment, setSendingComment] = useState(false);
+    const [selectedImage, setSelectedImage] = useState(null);
 
     useEffect(() => {
         fetchTicket();
     }, [id]);
 
     const fetchTicket = async () => {
+        if (!user) return;
         try {
-            const response = await ticketApi.getTicketById(id, 'USER');
+            const response = await ticketApi.getTicketById(id, user.role);
             setTicket(response.data);
         } catch (error) {
             console.error("Error fetching ticket:", error);
@@ -37,15 +40,15 @@ const StudentTicketDetails = () => {
 
     const handleAddComment = async (e) => {
         e.preventDefault();
-        if (!newComment.trim()) return;
+        if (!newComment.trim() || !user) return;
 
         setSendingComment(true);
         try {
             await ticketApi.addComment(id, {
                 content: newComment,
-                authorId: STUDENT_ID,
-                authorName: STUDENT_NAME,
-                authorRole: 'STUDENT'
+                authorId: user.id,
+                authorName: user.name,
+                authorRole: user.role
             });
             setNewComment('');
             fetchTicket();
@@ -58,8 +61,9 @@ const StudentTicketDetails = () => {
 
     const handleDeleteComment = async (commentId) => {
         if (!window.confirm("Are you sure you want to delete this comment?")) return;
+        if (!user) return;
         try {
-            await ticketApi.deleteComment(id, commentId, STUDENT_ID);
+            await ticketApi.deleteComment(id, commentId);
             fetchTicket();
         } catch (error) {
             alert("Failed to delete comment");
@@ -68,12 +72,7 @@ const StudentTicketDetails = () => {
 
     const handleUpdateComment = async (commentId, content) => {
         try {
-            await ticketApi.updateComment({ 
-                ticketId: id,
-                commentId: commentId,
-                userId: STUDENT_ID, 
-                content 
-            });
+            await ticketApi.updateComment(id, commentId, content);
             fetchTicket();
         } catch (err) {
             console.error("Update failed:", err);
@@ -153,7 +152,11 @@ const StudentTicketDetails = () => {
                                 <h3 className="font-bold text-slate-900">Attachments</h3>
                                 <div className="flex flex-wrap gap-4">
                                     {ticket.attachments.map((file, i) => (
-                                        <div key={i} className="group relative w-32 h-32 rounded-2xl overflow-hidden border border-slate-200 cursor-zoom-in">
+                                        <div 
+                                            key={i} 
+                                            onClick={() => setSelectedImage(file.url?.startsWith('http') ? file.url : (file.url?.startsWith('/') ? `http://localhost:8080${file.url}` : file.url))}
+                                            className="group relative w-32 h-32 rounded-2xl overflow-hidden border border-slate-200 cursor-zoom-in"
+                                        >
                                             <img 
                                                 src={file.url?.startsWith('http') ? file.url : (file.url?.startsWith('/') ? `http://localhost:8080${file.url}` : file.url)} 
                                                 onError={(e) => {
@@ -197,7 +200,7 @@ const StudentTicketDetails = () => {
                     <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm space-y-8">
                         <CommentList 
                             comments={ticket.comments || []} 
-                            currentUserId={STUDENT_ID}
+                            currentUserId={user?.id}
                             onDelete={handleDeleteComment}
                             onUpdate={handleUpdateComment}
                         />
@@ -223,6 +226,8 @@ const StudentTicketDetails = () => {
 
                 {/* Sidebar - Timeline & Info */}
                 <div className="space-y-6">
+                    <TicketSLAInfo ticket={ticket} />
+                    
                     <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-6">
                         <h3 className="font-bold text-slate-900">Technician Information</h3>
                         {ticket.assignedTechnicianId ? (
@@ -248,6 +253,31 @@ const StudentTicketDetails = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Image Modal */}
+            {selectedImage && (
+                <div 
+                    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-sm animate-in fade-in duration-200"
+                    onClick={() => setSelectedImage(null)}
+                >
+                    <button 
+                        onClick={() => setSelectedImage(null)}
+                        className="absolute top-8 right-8 p-3 rounded-full bg-white/10 text-white hover:bg-white/20 transition-all z-50"
+                    >
+                        <X size={24} />
+                    </button>
+                    <div 
+                        className="relative max-w-5xl max-h-[90vh] overflow-hidden rounded-3xl shadow-2xl animate-in zoom-in-95 duration-200"
+                        onClick={e => e.stopPropagation()}
+                    >
+                        <img 
+                            src={selectedImage} 
+                            alt="Attachment Full Size" 
+                            className="w-full h-full object-contain bg-slate-800"
+                        />
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

@@ -34,6 +34,14 @@ public class TicketResponseDTO {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    // SLA Fields
+    private LocalDateTime firstResponseAt;
+    private LocalDateTime resolvedAt;
+    private Long firstResponseDuration;
+    private Long resolutionDuration;
+    private Boolean firstResponseSlaBreached;
+    private Boolean resolutionSlaBreached;
+
     @Data
     public static class AttachmentDTO {
         private String name;

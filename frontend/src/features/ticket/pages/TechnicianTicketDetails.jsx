@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, CheckCircle2, History, MessageSquare, Send, Save, Activity } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, History, MessageSquare, Send, Save, Activity, X } from 'lucide-react';
 import ticketApi from '../../../api/ticketApi';
 import StatusBadge from '../components/StatusBadge';
 import StatusTimeline from '../components/StatusTimeline';
 import CommentList from '../components/CommentList';
+import TicketSLAInfo from '../components/TicketSLAInfo';
 
-const TECH_ID = "TECH001";
-const TECH_NAME = "Mike Johnson";
+import { useAuth } from '../../../context/AuthContext';
 
 const TechnicianTicketDetails = () => {
+    const { user } = useAuth();
     const { id } = useParams();
     const navigate = useNavigate();
     const [ticket, setTicket] = useState(null);
@@ -19,14 +20,16 @@ const TechnicianTicketDetails = () => {
     const [status, setStatus] = useState('');
     const [newComment, setNewComment] = useState('');
     const [updating, setUpdating] = useState(false);
+    const [selectedImage, setSelectedImage] = useState(null);
 
     useEffect(() => {
         fetchTicket();
     }, [id]);
 
     const fetchTicket = async () => {
+        if (!user) return;
         try {
-            const res = await ticketApi.getTicketById(id, 'TECHNICIAN');
+            const res = await ticketApi.getTicketById(id, user.role);
             setTicket(res.data);
             setResolutionNotes(res.data.resolutionNotes || '');
             setStatus(res.data.status);
@@ -58,13 +61,13 @@ const TechnicianTicketDetails = () => {
 
     const handleAddComment = async (e) => {
         e.preventDefault();
-        if (!newComment.trim()) return;
+        if (!newComment.trim() || !user) return;
         try {
             await ticketApi.addComment(id, {
                 content: newComment,
-                authorId: TECH_ID,
-                authorName: TECH_NAME,
-                authorRole: 'TECHNICIAN'
+                authorId: user.id,
+                authorName: user.name,
+                authorRole: user.role
             });
             setNewComment('');
             fetchTicket();
@@ -74,13 +77,9 @@ const TechnicianTicketDetails = () => {
     };
 
     const handleUpdateComment = async (commentId, content) => {
+        if (!user) return;
         try {
-            await ticketApi.updateComment({ 
-                ticketId: id,
-                commentId: commentId,
-                userId: TECH_ID, 
-                content 
-            });
+            await ticketApi.updateComment(id, commentId, content);
             fetchTicket();
         } catch (err) {
             console.error("Update failed:", err);
@@ -144,7 +143,11 @@ const TechnicianTicketDetails = () => {
                                 <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">Photos</h3>
                                 <div className="flex gap-3">
                                     {ticket.attachments.map((a, i) => (
-                                        <div key={i} className="group relative w-32 h-32 rounded-2xl overflow-hidden border border-slate-200 cursor-zoom-in flex-shrink-0">
+                                        <div 
+                                            key={i} 
+                                            onClick={() => setSelectedImage(a.url ? (a.url.startsWith('http') ? a.url : (a.url.startsWith('/') ? `http://localhost:8080${a.url}` : a.url)) : `https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&q=80&w=300`)}
+                                            className="group relative w-32 h-32 rounded-2xl overflow-hidden border border-slate-200 cursor-zoom-in flex-shrink-0"
+                                        >
                                             <img 
                                                 src={a.url ? (a.url.startsWith('http') ? a.url : (a.url.startsWith('/') ? `http://localhost:8080${a.url}` : a.url)) : `https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&q=80&w=300`} 
                                                 onError={(e) => {
@@ -154,7 +157,9 @@ const TechnicianTicketDetails = () => {
                                                 alt="Attachment" 
                                                 className="w-full h-full object-cover transition-transform group-hover:scale-110" 
                                             />
-                                            <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                            <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                <Activity className="text-white w-6 h-6" />
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
@@ -164,8 +169,8 @@ const TechnicianTicketDetails = () => {
                         <div className="pt-8 border-t border-slate-50">
                             <CommentList 
                                 comments={ticket.comments || []} 
-                                currentUserId={TECH_ID}
-                                onDelete={(cid) => ticketApi.deleteComment(id, cid, TECH_ID).then(fetchTicket)}
+                                currentUserId={user?.id}
+                                onDelete={(cid) => ticketApi.deleteComment(id, cid).then(fetchTicket)}
                                 onUpdate={handleUpdateComment}
                             />
                             <form onSubmit={handleAddComment} className="mt-6 flex gap-3">
@@ -187,6 +192,8 @@ const TechnicianTicketDetails = () => {
 
                 {/* Technician Actions Panel */}
                 <div className="lg:col-span-5 space-y-6">
+                    <TicketSLAInfo ticket={ticket} />
+                    
                     <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/20 space-y-8 sticky top-6">
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-2xl bg-slate-900 flex items-center justify-center">
@@ -247,6 +254,31 @@ const TechnicianTicketDetails = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Image Modal */}
+            {selectedImage && (
+                <div 
+                    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-sm animate-in fade-in duration-200"
+                    onClick={() => setSelectedImage(null)}
+                >
+                    <button 
+                        onClick={() => setSelectedImage(null)}
+                        className="absolute top-8 right-8 p-3 rounded-full bg-white/10 text-white hover:bg-white/20 transition-all z-50"
+                    >
+                        <X size={24} />
+                    </button>
+                    <div 
+                        className="relative max-w-5xl max-h-[90vh] overflow-hidden rounded-3xl shadow-2xl animate-in zoom-in-95 duration-200"
+                        onClick={e => e.stopPropagation()}
+                    >
+                        <img 
+                            src={selectedImage} 
+                            alt="Attachment Full Size" 
+                            className="w-full h-full object-contain bg-slate-800"
+                        />
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
