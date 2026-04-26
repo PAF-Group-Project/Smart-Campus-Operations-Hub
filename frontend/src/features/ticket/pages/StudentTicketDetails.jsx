@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, MapPin, Calendar, User, Tag, Send, AlertCircle } from 'lucide-react';
+import { ArrowLeft, MapPin, Calendar, User, Tag, Send, AlertCircle, X } from 'lucide-react';
 import ticketApi from '../../../api/ticketApi';
 import StatusBadge from '../components/StatusBadge';
 import StatusTimeline from '../components/StatusTimeline';
@@ -18,6 +18,7 @@ const StudentTicketDetails = () => {
     const [error, setError] = useState(null);
     const [newComment, setNewComment] = useState('');
     const [sendingComment, setSendingComment] = useState(false);
+    const [selectedImage, setSelectedImage] = useState(null);
 
     useEffect(() => {
         fetchTicket();
@@ -151,7 +152,11 @@ const StudentTicketDetails = () => {
                                 <h3 className="font-bold text-slate-900">Attachments</h3>
                                 <div className="flex flex-wrap gap-4">
                                     {ticket.attachments.map((file, i) => (
-                                        <div key={i} className="group relative w-32 h-32 rounded-2xl overflow-hidden border border-slate-200 cursor-zoom-in">
+                                        <div 
+                                            key={i} 
+                                            onClick={() => setSelectedImage(file.url?.startsWith('http') ? file.url : (file.url?.startsWith('/') ? `http://localhost:8080${file.url}` : file.url))}
+                                            className="group relative w-32 h-32 rounded-2xl overflow-hidden border border-slate-200 cursor-zoom-in"
+                                        >
                                             <img 
                                                 src={file.url?.startsWith('http') ? file.url : (file.url?.startsWith('/') ? `http://localhost:8080${file.url}` : file.url)} 
                                                 onError={(e) => {
@@ -248,6 +253,31 @@ const StudentTicketDetails = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Image Modal */}
+            {selectedImage && (
+                <div 
+                    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-sm animate-in fade-in duration-200"
+                    onClick={() => setSelectedImage(null)}
+                >
+                    <button 
+                        onClick={() => setSelectedImage(null)}
+                        className="absolute top-8 right-8 p-3 rounded-full bg-white/10 text-white hover:bg-white/20 transition-all z-50"
+                    >
+                        <X size={24} />
+                    </button>
+                    <div 
+                        className="relative max-w-5xl max-h-[90vh] overflow-hidden rounded-3xl shadow-2xl animate-in zoom-in-95 duration-200"
+                        onClick={e => e.stopPropagation()}
+                    >
+                        <img 
+                            src={selectedImage} 
+                            alt="Attachment Full Size" 
+                            className="w-full h-full object-contain bg-slate-800"
+                        />
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
