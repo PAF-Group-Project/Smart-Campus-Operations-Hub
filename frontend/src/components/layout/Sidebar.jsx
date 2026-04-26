@@ -11,11 +11,11 @@ import {
   LayoutGrid,
   PieChart
 } from 'lucide-react';
-import { useResourceAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 
 const Sidebar = () => {
-  const { isAdmin } = useResourceAuth();
-
+  const { user } = useAuth();
+  
   const navItems = [
     { name: 'Dashboard', path: '/dashboard', icon: BarChart2 },
     { name: 'Browse Resources', path: '/resources', icon: Box },
@@ -31,6 +31,9 @@ const Sidebar = () => {
     { name: 'Resource Stats', path: '/admin/stats', icon: PieChart },
   ];
 
+  const visibleNavItems = navItems.filter((item) => !item.role || item.role === user?.role);
+  const isAdmin = user?.role === 'ADMIN';
+
   return (
     <aside className="w-64 bg-white border-r border-slate-200 flex flex-col h-screen h-full sticky top-0">
       <div className="p-6 border-b border-slate-200">
@@ -38,7 +41,7 @@ const Sidebar = () => {
       </div>
       
       <nav className="flex-1 p-4 space-y-1">
-        {navItems.map((item) => (
+        {visibleNavItems.map((item) => (
           <NavLink
             key={item.path}
             to={item.path}
@@ -55,8 +58,8 @@ const Sidebar = () => {
           </NavLink>
         ))}
 
-        {/* Resource Admin Section — only shown when logged in as resource admin */}
-        {isAdmin() && (
+        {/* Resource Admin Section — only shown for ADMINs */}
+        {isAdmin && (
           <>
             <div className="pt-4 pb-1">
               <p className="px-4 text-xs font-semibold text-slate-400 uppercase tracking-widest">
@@ -84,10 +87,19 @@ const Sidebar = () => {
       </nav>
 
       <div className="p-4 border-t border-slate-200">
-        <div className="flex items-center space-x-3 px-4 py-2 text-sm text-slate-600 hover:text-slate-900 cursor-pointer">
+        <NavLink
+          to="/settings/notifications"
+          className={({ isActive }) =>
+            `flex items-center space-x-3 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              isActive
+                ? 'bg-primary-50 text-primary-700'
+                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+            }`
+          }
+        >
           <Settings size={20} />
           <span>Settings</span>
-        </div>
+        </NavLink>
       </div>
     </aside>
   );

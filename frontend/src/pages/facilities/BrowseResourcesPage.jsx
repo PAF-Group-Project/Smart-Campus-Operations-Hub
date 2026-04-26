@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Search, SlidersHorizontal, X, Building2, Users, ChevronDown } from 'lucide-react';
 import { useResources } from '../../hooks/useResources';
 import { ResourceCard } from '../../components/facilities/ResourceCard';
@@ -49,19 +49,34 @@ const SelectFilter = ({ value, onChange, options }) => (
 );
 
 export const BrowseResourcesPage = () => {
-  const [localFilters, setLocalFilters] = useState({ type: '', status: '', location: '', building: '', minCapacity: '', maxCapacity: '' });
+  const [search, setSearch] = useState('');
+  const [localFilters, setLocalFilters] = useState({ type: '', status: '', building: '', minCapacity: '', maxCapacity: '' });
   const [sort, setSort] = useState('');
   const { data: resources, loading } = useResources(localFilters);
 
   const setFilter = (key, val) => setLocalFilters(prev => ({ ...prev, [key]: val }));
 
   const clearAll = () => {
-    setLocalFilters({ type: '', status: '', location: '', building: '', minCapacity: '', maxCapacity: '' });
+    setSearch('');
+    setLocalFilters({ type: '', status: '', building: '', minCapacity: '', maxCapacity: '' });
     setSort('');
   };
 
-  const hasFilters = Object.values(localFilters).some(Boolean) || sort;
-  const sorted = sortResources(resources, sort);
+  const hasFilters = search || Object.values(localFilters).some(Boolean) || sort;
+
+  // Client-side keyword search across name, description, building, location
+  const filtered = useMemo(() => {
+    if (!search.trim()) return resources;
+    const kw = search.trim().toLowerCase();
+    return resources.filter(r =>
+      (r.name || '').toLowerCase().includes(kw) ||
+      (r.description || '').toLowerCase().includes(kw) ||
+      (r.building || '').toLowerCase().includes(kw) ||
+      (r.location || '').toLowerCase().includes(kw)
+    );
+  }, [resources, search]);
+
+  const sorted = sortResources(filtered, sort);
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -93,15 +108,20 @@ export const BrowseResourcesPage = () => {
         <div className="max-w-7xl mx-auto px-6 py-3">
           <div className="flex flex-wrap gap-3 items-center">
             {/* Keyword search */}
-            <div className="relative flex-1 min-w-[180px]">
-              <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <div className="relative flex-1 min-w-[200px]">
+              <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-indigo-400" />
               <input
                 type="text"
-                value={localFilters.location}
-                onChange={e => setFilter('location', e.target.value)}
-                placeholder="Search location..."
-                className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent"
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                placeholder="Search resources by name, location..."
+                className="w-full pl-9 pr-8 py-2 text-sm border border-indigo-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent shadow-sm"
               />
+              {search && (
+                <button onClick={() => setSearch('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                  <X size={13} />
+                </button>
+              )}
             </div>
 
             <SelectFilter value={localFilters.type} onChange={v => setFilter('type', v)} options={TYPE_OPTIONS} />

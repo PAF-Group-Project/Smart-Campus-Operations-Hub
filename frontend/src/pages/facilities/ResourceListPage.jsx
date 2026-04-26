@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Search, Filter } from 'lucide-react';
-import toast from 'react-hot-toast';
 import { getAllResources, createResource } from '../../services/resourceService';
 import { ResourceCard } from '../../components/facilities/ResourceCard';
 import { ResourceFormModal } from '../../components/facilities/ResourceFormModal';
@@ -12,6 +11,7 @@ export const ResourceListPage = () => {
   const [resources, setResources] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [notice, setNotice] = useState({ type: '', message: '' });
   
   // Filters
   const [filters, setFilters] = useState({
@@ -32,7 +32,7 @@ export const ResourceListPage = () => {
       // or if it returns the whole body, we handle both.
       setResources(Array.isArray(response) ? response : (response?.data || []));
     } catch (error) {
-      toast.error('Failed to load facilities');
+      setNotice({ type: 'error', message: 'Failed to load facilities.' });
       console.error(error);
     } finally {
       setLoading(false);
@@ -51,11 +51,11 @@ export const ResourceListPage = () => {
   const handleCreateResource = async (data) => {
     try {
       await createResource(data);
-      toast.success('Facility created successfully!');
+      setNotice({ type: 'success', message: 'Facility created successfully.' });
       setIsModalOpen(false);
       fetchResources();
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to create facility');
+      setNotice({ type: 'error', message: error.response?.data?.message || 'Failed to create facility.' });
     }
   };
 
@@ -65,6 +65,11 @@ export const ResourceListPage = () => {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Facilities & Assets</h1>
           <p className="text-gray-500 text-sm mt-1">Manage and monitor campus spaces and equipment</p>
+          {notice.message && (
+            <p className={`mt-2 text-sm ${notice.type === 'error' ? 'text-red-600' : 'text-emerald-600'}`}>
+              {notice.message}
+            </p>
+          )}
         </div>
         <Button onClick={() => setIsModalOpen(true)} className="flex items-center shadow-lg hover:shadow-xl transition-all">
           <Plus size={18} className="mr-2" /> Add Facility

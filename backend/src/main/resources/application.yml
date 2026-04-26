@@ -3,17 +3,20 @@ spring:
     name: smartcampus
   data:
     mongodb:
-      uri: ${MONGO_URI:mongodb+srv://pafmongodb_db_user:BhA6GLc4vFUKdIQ6@cluster0.rm0kl5u.mongodb.net/smartcampus?retryWrites=true&w=majority&appName=Cluster0}
+      uri: mongodb+srv://pafmongodb_db_user:BhA6GLc4vFUKdIQ6@cluster0.rm0kl5u.mongodb.net/smart_campus_db?appName=Cluster0
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
   security:
     oauth2:
       client:
         registration:
           google:
-            client-id: ${GOOGLE_CLIENT_ID:YOUR_GOOGLE_CLIENT_ID}
-            client-secret: ${GOOGLE_CLIENT_SECRET:YOUR_GOOGLE_CLIENT_SECRET}
-            scope:
-              - email
-              - profile
+            client-id: ${GOOGLE_CLIENT_ID:833598228067-7tpan0n3uqpl0ar0kg339oj147l5mmjh.apps.googleusercontent.com}
+            client-secret: ${GOOGLE_CLIENT_SECRET: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}
+            scope: email,profile
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
 
 server:
   port: 8080

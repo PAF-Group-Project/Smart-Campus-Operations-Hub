@@ -1,52 +1,64 @@
-import React, { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
+import api from '../api/axios';
 
-const ResourceAuthContext = createContext(null);
+const AuthContext = createContext();
 
-// Real credentials for the resources module
-const CREDENTIALS = [
-  { email: 'admin@smartcampus.com', password: 'Admin123!', name: 'Admin User', role: 'ADMIN' },
-  { email: 'user@smartcampus.com',  password: 'User123!',  name: 'Regular User', role: 'USER'  },
-];
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-export const ResourceAuthProvider = ({ children }) => {
-  const [user, setUser] = useState(() => {
+  const fetchUser = async () => {
     try {
-      const stored = localStorage.getItem('resource_user');
-      return stored ? JSON.parse(stored) : null;
-    } catch {
-      return null;
-    }
-  });
-
-  const login = (email, password) => {
-    const found = CREDENTIALS.find(c => c.email === email && c.password === password);
-    if (found) {
-      const userData = { email: found.email, name: found.name, role: found.role };
+      const userData = await api.get('/auth/me');
       setUser(userData);
-      localStorage.setItem('resource_user', JSON.stringify(userData));
-      return { success: true, role: found.role };
+    } catch (err) {
+      setUser(null);
+    } finally {
+      setLoading(false);
     }
-    return { success: false, message: 'Invalid email or password' };
   };
 
-  const logout = () => {
+  const login = () => {
+    window.location.href = 'http://localhost:8080/oauth2/authorization/google';
+  };
+
+  const loginWithPassword = async ({ email, password }) => {
+    const userData = await api.post('/auth/login', { email, password });
+    setUser(userData);
+    return userData;
+  };
+
+  const registerWithPassword = async ({ name, email, password }) => {
+    const userData = await api.post('/auth/register', { name, email, password });
+    setUser(userData);
+    return userData;
+  };
+
+  const logout = async () => {
     setUser(null);
-    localStorage.removeItem('resource_user');
+    window.location.href = 'http://localhost:8080/api/v1/auth/logout';
   };
 
-  const isAdmin = () => user?.role === 'ADMIN';
-  const isLoggedIn = () => !!user;
+  useEffect(() => {
+    fetchUser();
+  }, []);
 
   return (
-    <ResourceAuthContext.Provider value={{ user, login, logout, isAdmin, isLoggedIn }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        login,
+        loginGoogle: login,
+        loginWithPassword,
+        registerWithPassword,
+        logout,
+        fetchUser
+      }}
+    >
       {children}
-    </ResourceAuthContext.Provider>
+    </AuthContext.Provider>
   );
 };
 
-export const useResourceAuth = () => {
-  const ctx = useContext(ResourceAuthContext);
-  // Return safe defaults if context not available
-  if (!ctx) return { user: null, login: () => ({ success: false }), logout: () => {}, isAdmin: () => false, isLoggedIn: () => false };
-  return ctx;
-};
+export const useAuth = () => useContext(AuthContext);

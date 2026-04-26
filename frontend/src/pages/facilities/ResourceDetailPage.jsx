@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import {
   ArrowLeft, MapPin, Users, Calendar, Building2, Layers,
   Edit2, Trash2, Activity, Wrench, AlertTriangle, Settings,
@@ -12,7 +12,7 @@ import { LoadingSpinner } from '../../components/ui/LoadingSpinner';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog';
 import { ResourceFormModal } from '../../components/facilities/ResourceFormModal';
 import { TypeBadge, StatusBadge } from '../../components/facilities/ResourceCard';
-import { useResourceAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 
 const TYPE_ICON = {
   LAB: Beaker, LECTURE_HALL: Monitor, MEETING_ROOM: LayoutDashboard, EQUIPMENT: Settings,
@@ -22,14 +22,16 @@ const DAYS_ORDER = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SAT
 export const ResourceDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { isAdmin } = useResourceAuth();
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'ADMIN';
+  
   const [resource, setResource] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
-  const fetch = async () => {
+  const fetchResource = async () => {
     setLoading(true);
     try {
       const res = await getResourceById(id);
@@ -42,7 +44,9 @@ export const ResourceDetailPage = () => {
     }
   };
 
-  useEffect(() => { fetch(); }, [id]);
+  useEffect(() => { 
+    fetchResource(); 
+  }, [id]);
 
   const handleDelete = async () => {
     setDeleting(true);
@@ -62,7 +66,7 @@ export const ResourceDetailPage = () => {
       await updateResource(id, data);
       toast.success('Resource updated!');
       setIsEditOpen(false);
-      fetch();
+      fetchResource();
     } catch (e) {
       toast.error(e?.response?.data?.message || 'Failed to update resource');
       throw e;
@@ -113,7 +117,7 @@ export const ResourceDetailPage = () => {
               <TypeBadge type={resource.type} />
             </div>
 
-            {isAdmin() && (
+            {isAdmin && (
               <div className="flex gap-2 flex-shrink-0">
                 <button onClick={() => setIsEditOpen(true)}
                   className="flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-700 rounded-xl text-sm font-semibold hover:bg-indigo-100 transition-colors">
