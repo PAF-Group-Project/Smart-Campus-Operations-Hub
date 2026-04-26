@@ -27,8 +27,10 @@ public class User {
     private Role role;
     private String provider; // "google" or "local"
     private String googleId;
+    
     @Builder.Default
     private NotificationPreferences notificationPreferences = NotificationPreferences.defaultPreferences();
+    
     @JsonIgnore
     private String passwordHash;
 

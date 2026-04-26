@@ -1,195 +1,258 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import {ArrowLeft, MapPin, Users, Calendar, AlertTriangle, Activity, Wrench, Settings, Edit2, Trash2 } from 'lucide-react';
-import { getResourceById, deleteResource, updateResource, updateResourceStatus } from '../../services/resourceService';
-import { Badge } from '../../components/ui/Badge';
+import {
+  ArrowLeft, MapPin, Users, Calendar, Building2, Layers,
+  Edit2, Trash2, Activity, Wrench, AlertTriangle, Settings,
+  Beaker, Monitor, LayoutDashboard, Tag
+} from 'lucide-react';
+import toast from 'react-hot-toast';
+import { getResourceById, deleteResource, updateResource } from '../../services/resourceService';
 import { Button } from '../../components/ui/Button';
 import { LoadingSpinner } from '../../components/ui/LoadingSpinner';
+import { ConfirmDialog } from '../../components/ui/ConfirmDialog';
 import { ResourceFormModal } from '../../components/facilities/ResourceFormModal';
+import { TypeBadge, StatusBadge } from '../../components/facilities/ResourceCard';
+import { useAuth } from '../../context/AuthContext';
+
+const TYPE_ICON = {
+  LAB: Beaker, LECTURE_HALL: Monitor, MEETING_ROOM: LayoutDashboard, EQUIPMENT: Settings,
+};
+const DAYS_ORDER = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'];
 
 export const ResourceDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'ADMIN';
+  
   const [resource, setResource] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [notice, setNotice] = useState({ type: '', message: '' });
-  
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
   const fetchResource = async () => {
     setLoading(true);
     try {
-      const data = await getResourceById(id);
-      const resourceData = data?.data ?? data;
-      setResource(resourceData);
-    } catch (error) {
-      setNotice({ type: 'error', message: 'Failed to load facility details.' });
-      navigate('/facilities');
+      const res = await getResourceById(id);
+      setResource(res?.data ?? res);
+    } catch {
+      toast.error('Resource not found');
+      navigate('/resources');
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchResource();
+  useEffect(() => { 
+    fetchResource(); 
   }, [id]);
 
   const handleDelete = async () => {
-    if (window.confirm('Are you sure you want to delete this facility? This action cannot be undone.')) {
-      setIsDeleting(true);
-      try {
-        await deleteResource(id);
-        setNotice({ type: 'success', message: 'Facility deleted successfully.' });
-        navigate('/facilities');
-      } catch (error) {
-        setNotice({ type: 'error', message: 'Failed to delete facility.' });
-        setIsDeleting(false);
-      }
+    setDeleting(true);
+    try {
+      await deleteResource(id);
+      toast.success('Resource deleted');
+      navigate('/resources');
+    } catch {
+      toast.error('Failed to delete resource');
+      setDeleting(false);
+      setIsDeleteOpen(false);
     }
   };
 
   const handleUpdate = async (data) => {
     try {
       await updateResource(id, data);
-      setNotice({ type: 'success', message: 'Facility updated successfully.' });
-      setIsEditModalOpen(false);
+      toast.success('Resource updated!');
+      setIsEditOpen(false);
       fetchResource();
-    } catch (error) {
-      setNotice({ type: 'error', message: 'Failed to update facility.' });
+    } catch (e) {
+      toast.error(e?.response?.data?.message || 'Failed to update resource');
+      throw e;
     }
   };
 
-  const handleStatusChange = async (newStatus) => {
-    try {
-      await updateResourceStatus(id, newStatus);
-      setNotice({ type: 'success', message: 'Status updated successfully.' });
-      fetchResource();
-    } catch (error) {
-      setNotice({ type: 'error', message: 'Failed to update status.' });
-    }
-  };
-
-  if (loading) return <div className="py-20"><LoadingSpinner size="lg" /></div>;
+  if (loading) return <div className="flex justify-center py-24"><LoadingSpinner size="lg" /></div>;
   if (!resource) return null;
 
-  const getStatusBadge = (status) => {
-    switch (status) {
-      case 'ACTIVE': return <Badge variant="success" className="flex items-center gap-1"><Activity size={14}/> Active</Badge>;
-      case 'UNDER_MAINTENANCE': return <Badge variant="warning" className="flex items-center gap-1"><Wrench size={14}/> Under Maintenance</Badge>;
-      case 'OUT_OF_SERVICE': return <Badge variant="danger" className="flex items-center gap-1"><AlertTriangle size={14}/> Out of Service</Badge>;
-      default: return <Badge>{status}</Badge>;
-    }
-  };
+  const TypeIcon = TYPE_ICON[resource.type] || Settings;
+
+  // Build weekly schedule map
+  const scheduleMap = {};
+  (resource.availabilityWindows || []).forEach(w => {
+    if (!scheduleMap[w.dayOfWeek]) scheduleMap[w.dayOfWeek] = [];
+    scheduleMap[w.dayOfWeek].push(`${w.startTime} – ${w.endTime}`);
+  });
 
   return (
-    <div className="max-w-5xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-      <div className="mb-6 flex gap-4 items-center">
-        <Link to="/facilities" className="text-gray-500 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 p-2 rounded-full transition-colors">
-          <ArrowLeft size={20} />
-        </Link>
-        <h1 className="text-2xl font-bold text-gray-900">Facility Details</h1>
-      </div>
-      {notice.message && (
-        <p className={`mb-4 text-sm ${notice.type === 'error' ? 'text-red-600' : 'text-emerald-600'}`}>
-          {notice.message}
-        </p>
-      )}
+    <div className="max-w-5xl mx-auto py-6 px-4">
+      {/* Back */}
+      <button onClick={() => navigate(-1)}
+        className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 transition-colors mb-6 group">
+        <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
+        Back to Browse
+      </button>
 
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-8">
+      {/* Header card */}
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-6">
         {resource.imageUrl ? (
-          <div className="h-64 sm:h-80 w-full relative">
+          <div className="h-56 w-full overflow-hidden">
             <img src={resource.imageUrl} alt={resource.name} className="w-full h-full object-cover" />
           </div>
         ) : (
-          <div className="h-48 bg-gradient-to-r from-primary-50 to-primary-100 flex items-center justify-center">
-            <Settings className="w-16 h-16 text-primary-200" />
+          <div className="h-40 flex items-center justify-center"
+            style={{ background: 'linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%)' }}>
+            <TypeIcon className="w-20 h-20 text-indigo-300" strokeWidth={1} />
           </div>
         )}
-        
+
         <div className="p-6 sm:p-8">
-          <div className="flex flex-col sm:flex-row justify-between items-start gap-6 mb-8">
-            <div>
-              <div className="flex items-center gap-3 mb-2">
-                <h2 className="text-3xl font-bold text-gray-900">{resource.name}</h2>
-                {getStatusBadge(resource.status)}
+          <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+            <div className="flex-1">
+              <div className="flex flex-wrap items-center gap-3 mb-2">
+                <h1 className="text-3xl font-extrabold text-gray-900">{resource.name}</h1>
+                <StatusBadge status={resource.status} />
               </div>
-              <div className="text-lg text-primary-600 font-medium">{resource.type.replace('_', ' ')}</div>
-            </div>
-            <div className="flex gap-3">
-              <Button variant="secondary" onClick={() => setIsEditModalOpen(true)} className="flex items-center shadow-sm">
-                <Edit2 size={16} className="mr-2" /> Edit
-              </Button>
-              <Button variant="danger" onClick={handleDelete} disabled={isDeleting} className="flex items-center shadow-sm">
-                <Trash2 size={16} className="mr-2" /> Delete
-              </Button>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="col-span-1 border-r border-gray-100 pr-0 md:pr-8 space-y-6">
-              <div>
-                <h3 className="text-sm font-medium text-gray-500 mb-3 flex items-center"><MapPin className="mr-2 w-4 h-4" /> Location</h3>
-                <p className="text-gray-900 font-medium">{resource.location}</p>
-              </div>
-              
-              {resource.capacity && (
-                <div>
-                  <h3 className="text-sm font-medium text-gray-500 mb-3 flex items-center"><Users className="mr-2 w-4 h-4" /> Capacity</h3>
-                  <p className="text-gray-900 font-medium">{resource.capacity} people</p>
-                </div>
-              )}
-
-              <div>
-                <h3 className="text-sm font-medium text-gray-500 mb-3 flex items-center"><Settings className="mr-2 w-4 h-4" /> Quick Actions</h3>
-                <select 
-                  className="w-full rounded-md border border-gray-300 p-2 text-sm focus:ring-primary-500"
-                  value={resource.status}
-                  onChange={(e) => handleStatusChange(e.target.value)}
-                >
-                  <option value="ACTIVE">Set to Active</option>
-                  <option value="UNDER_MAINTENANCE">Set to Maintenance</option>
-                  <option value="OUT_OF_SERVICE">Set to Out of Service</option>
-                </select>
-              </div>
+              <TypeBadge type={resource.type} />
             </div>
 
-            <div className="col-span-1 md:col-span-2 space-y-8">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">Description</h3>
-                <p className="text-gray-600 whitespace-pre-line leading-relaxed">
-                  {resource.description || "No description provided for this facility."}
-                </p>
+            {isAdmin && (
+              <div className="flex gap-2 flex-shrink-0">
+                <button onClick={() => setIsEditOpen(true)}
+                  className="flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-700 rounded-xl text-sm font-semibold hover:bg-indigo-100 transition-colors">
+                  <Edit2 size={15} /> Edit
+                </button>
+                <button onClick={() => setIsDeleteOpen(true)}
+                  className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-xl text-sm font-semibold hover:bg-red-100 transition-colors">
+                  <Trash2 size={15} /> Delete
+                </button>
               </div>
-
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center"><Calendar className="mr-2 w-5 h-5 text-primary-500" /> Availability Windows</h3>
-                {resource.availabilityWindows && resource.availabilityWindows.length > 0 ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {resource.availabilityWindows.map((window, index) => (
-                      <div key={index} className="bg-gray-50 rounded-lg p-4 border border-gray-100 flex items-center justify-between">
-                        <span className="font-semibold text-gray-700 w-24">{window.dayOfWeek}</span>
-                        <span className="bg-white px-3 py-1 rounded text-sm text-gray-600 font-medium border border-gray-200">
-                           {window.startTime} - {window.endTime}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="bg-gray-50 border border-dashed border-gray-200 rounded-lg p-6 text-center text-gray-500">
-                    No availability patterns defined for this resource.
-                  </div>
-                )}
-              </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
-      
-      <ResourceFormModal 
-        isOpen={isEditModalOpen} 
-        onClose={() => setIsEditModalOpen(false)} 
-        onSubmit={handleUpdate}
-        initialData={resource}
+
+      {/* Two-column layout */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Left: Details */}
+        <div className="md:col-span-1 space-y-4">
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-5">
+            <h2 className="font-bold text-gray-900 text-sm uppercase tracking-wider text-gray-500">Details</h2>
+
+            <div className="flex items-start gap-3">
+              <MapPin size={16} className="text-indigo-400 mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-xs text-gray-400 font-medium">Location</p>
+                <p className="text-sm font-semibold text-gray-800">{resource.location}</p>
+              </div>
+            </div>
+
+            {resource.building && (
+              <div className="flex items-start gap-3">
+                <Building2 size={16} className="text-indigo-400 mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="text-xs text-gray-400 font-medium">Building</p>
+                  <p className="text-sm font-semibold text-gray-800">{resource.building}</p>
+                </div>
+              </div>
+            )}
+
+            {resource.floor !== null && resource.floor !== undefined && (
+              <div className="flex items-start gap-3">
+                <Layers size={16} className="text-indigo-400 mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="text-xs text-gray-400 font-medium">Floor</p>
+                  <p className="text-sm font-semibold text-gray-800">Floor {resource.floor}</p>
+                </div>
+              </div>
+            )}
+
+            {resource.type !== 'EQUIPMENT' && resource.capacity != null && (
+              <div className="flex items-start gap-3">
+                <Users size={16} className="text-indigo-400 mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="text-xs text-gray-400 font-medium">Capacity</p>
+                  <p className="text-sm font-semibold text-gray-800">{resource.capacity} people</p>
+                </div>
+              </div>
+            )}
+
+            {(resource.amenities || []).length > 0 && (
+              <div className="flex items-start gap-3">
+                <Tag size={16} className="text-indigo-400 mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="text-xs text-gray-400 font-medium mb-2">Amenities</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {resource.amenities.map(a => (
+                      <span key={a} className="px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded-full text-xs font-medium">{a}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Right: Description + Availability */}
+        <div className="md:col-span-2 space-y-6">
+          {resource.description && (
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+              <h2 className="font-bold text-gray-900 mb-3">Description</h2>
+              <p className="text-gray-600 leading-relaxed whitespace-pre-line">{resource.description}</p>
+            </div>
+          )}
+
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <Calendar size={18} className="text-indigo-400" /> Availability Schedule
+            </h2>
+            {(resource.availabilityWindows || []).length === 0 ? (
+              <div className="text-sm text-gray-400 italic py-6 text-center bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                No availability windows defined
+              </div>
+            ) : (
+              <div className="overflow-hidden rounded-xl border border-gray-100">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="bg-gray-50">
+                      <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-36">Day</th>
+                      <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Time Slots</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {DAYS_ORDER.map(day => (
+                      scheduleMap[day] ? (
+                        <tr key={day} className="border-t border-gray-100 hover:bg-indigo-50/30 transition-colors">
+                          <td className="px-4 py-3 font-semibold text-gray-700">{day.charAt(0) + day.slice(1).toLowerCase()}</td>
+                          <td className="px-4 py-3">
+                            <div className="flex flex-wrap gap-2">
+                              {scheduleMap[day].map((slot, i) => (
+                                <span key={i} className="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-xs font-medium">{slot}</span>
+                              ))}
+                            </div>
+                          </td>
+                        </tr>
+                      ) : null
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Modals */}
+      <ResourceFormModal isOpen={isEditOpen} onClose={() => setIsEditOpen(false)} onSubmit={handleUpdate} initialData={resource} />
+      <ConfirmDialog
+        isOpen={isDeleteOpen}
+        onClose={() => setIsDeleteOpen(false)}
+        onConfirm={handleDelete}
+        loading={deleting}
+        title="Delete Resource"
+        message="Are you sure you want to delete this resource? This action cannot be undone."
+        confirmLabel="Delete"
       />
     </div>
   );
