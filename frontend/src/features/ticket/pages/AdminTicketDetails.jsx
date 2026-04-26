@@ -7,10 +7,10 @@ import StatusTimeline from '../components/StatusTimeline';
 import CommentList from '../components/CommentList';
 import TicketSLAInfo from '../components/TicketSLAInfo';
 
-const ADMIN_ID = "ADM001";
-const ADMIN_NAME = "Admin User";
+import { useAuth } from '../../../context/AuthContext';
 
 const AdminTicketDetails = () => {
+    const { user } = useAuth();
     const { id } = useParams();
     const navigate = useNavigate();
     const [ticket, setTicket] = useState(null);
@@ -27,8 +27,9 @@ const AdminTicketDetails = () => {
     }, [id]);
 
     const fetchTicket = async () => {
+        if (!user) return;
         try {
-            const res = await ticketApi.getTicketById(id, 'ADMIN');
+            const res = await ticketApi.getTicketById(id, user.role);
             setTicket(res.data);
         } catch (err) {
             console.error(err);
@@ -73,13 +74,13 @@ const AdminTicketDetails = () => {
 
     const handleAddComment = async (e) => {
         e.preventDefault();
-        if (!newComment.trim()) return;
+        if (!newComment.trim() || !user) return;
         try {
             await ticketApi.addComment(id, {
                 content: newComment,
-                authorId: ADMIN_ID,
-                authorName: ADMIN_NAME,
-                authorRole: 'ADMIN'
+                authorId: user.id,
+                authorName: user.name,
+                authorRole: user.role
             });
             setNewComment('');
             fetchTicket();
@@ -89,13 +90,9 @@ const AdminTicketDetails = () => {
     };
     
     const handleUpdateComment = async (commentId, content) => {
+        if (!user) return;
         try {
-            await ticketApi.updateComment({ 
-                ticketId: id,
-                commentId: commentId,
-                userId: ADMIN_ID, 
-                content 
-            });
+            await ticketApi.updateComment(id, commentId, user.id, content);
             fetchTicket();
         } catch (err) {
             console.error("Update failed:", err);
@@ -205,8 +202,8 @@ const AdminTicketDetails = () => {
                             <div className="pt-8 border-t border-slate-100">
                                 <CommentList 
                                     comments={ticket.comments || []} 
-                                    currentUserId={ADMIN_ID}
-                                    onDelete={(cid) => ticketApi.deleteComment(id, cid, ADMIN_ID).then(fetchTicket)}
+                                    currentUserId={user?.id}
+                                    onDelete={(cid) => ticketApi.deleteComment(id, cid, user?.id).then(fetchTicket)}
                                     onUpdate={handleUpdateComment}
                                 />
                                 

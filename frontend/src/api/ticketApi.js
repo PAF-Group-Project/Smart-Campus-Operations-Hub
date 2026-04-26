@@ -1,6 +1,6 @@
-import axios from 'axios';
+import api from './axios';
 
-const API_BASE_URL = 'http://localhost:8080/api/tickets';
+const TICKET_BASE = '/tickets';
 
 const ticketApi = {
     createTicket: async (ticketData, files) => {
@@ -9,30 +9,32 @@ const ticketApi = {
         if (files) {
             files.forEach(file => formData.append('attachments', file));
         }
-        return axios.post(API_BASE_URL, formData);
+        return api.post(TICKET_BASE, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
     },
 
-    getAllTickets: () => axios.get(API_BASE_URL),
+    getAllTickets: () => api.get(TICKET_BASE),
     
-    getStudentTickets: (studentId) => axios.get(`${API_BASE_URL}/student/${studentId}`),
+    getStudentTickets: () => api.get(`${TICKET_BASE}/my`),
     
-    getTechnicianTickets: (technicianId) => axios.get(`${API_BASE_URL}/technician/${technicianId}`),
+    getTechnicianTickets: () => api.get(`${TICKET_BASE}/assigned`),
     
-    getTicketById: (id, role) => axios.get(`${API_BASE_URL}/${id}${role ? `?role=${role}` : ''}`),
+    getTicketById: (id, role) => api.get(`${TICKET_BASE}/${id}${role ? `?role=${role}` : ''}`),
     
-    assignTechnician: (id, technicianData) => axios.patch(`${API_BASE_URL}/${id}/assign`, technicianData),
+    assignTechnician: (id, technicianData) => api.patch(`${TICKET_BASE}/${id}/assign`, technicianData),
     
-    rejectTicket: (id, reasonData) => axios.patch(`${API_BASE_URL}/${id}/reject`, reasonData),
+    rejectTicket: (id, reasonData) => api.patch(`${TICKET_BASE}/${id}/reject`, reasonData),
     
-    updateStatus: (id, statusData) => axios.patch(`${API_BASE_URL}/${id}/status`, statusData),
+    updateStatus: (id, statusData) => api.patch(`${TICKET_BASE}/${id}/status`, statusData),
     
-    addComment: (id, commentData) => axios.post(`${API_BASE_URL}/${id}/comments`, commentData),
+    addComment: (id, commentData) => api.post(`${TICKET_BASE}/${id}/comments`, commentData),
     
     deleteComment: (ticketId, commentId, userId) => 
-        axios.delete(`${API_BASE_URL}/${ticketId}/comments/${commentId}?userId=${userId}`),
+        api.delete(`${TICKET_BASE}/${ticketId}/comments/${commentId}?userId=${userId}`),
 
-    updateComment: (commentData) => 
-        axios.post(`http://localhost:8080/api/comments/update`, commentData)
+    updateComment: (ticketId, commentId, userId, newContent) => 
+        api.patch(`${TICKET_BASE}/${ticketId}/comments/${commentId}`, { content: newContent, userId })
 };
 
 export default ticketApi;

@@ -7,10 +7,10 @@ import StatusTimeline from '../components/StatusTimeline';
 import CommentList from '../components/CommentList';
 import TicketSLAInfo from '../components/TicketSLAInfo';
 
-const STUDENT_ID = "STU001";
-const STUDENT_NAME = "John Doe";
+import { useAuth } from '../../../context/AuthContext';
 
 const StudentTicketDetails = () => {
+    const { user } = useAuth();
     const { id } = useParams();
     const navigate = useNavigate();
     const [ticket, setTicket] = useState(null);
@@ -24,8 +24,9 @@ const StudentTicketDetails = () => {
     }, [id]);
 
     const fetchTicket = async () => {
+        if (!user) return;
         try {
-            const response = await ticketApi.getTicketById(id, 'USER');
+            const response = await ticketApi.getTicketById(id, user.role);
             setTicket(response.data);
         } catch (error) {
             console.error("Error fetching ticket:", error);
@@ -38,15 +39,15 @@ const StudentTicketDetails = () => {
 
     const handleAddComment = async (e) => {
         e.preventDefault();
-        if (!newComment.trim()) return;
+        if (!newComment.trim() || !user) return;
 
         setSendingComment(true);
         try {
             await ticketApi.addComment(id, {
                 content: newComment,
-                authorId: STUDENT_ID,
-                authorName: STUDENT_NAME,
-                authorRole: 'STUDENT'
+                authorId: user.id,
+                authorName: user.name,
+                authorRole: user.role
             });
             setNewComment('');
             fetchTicket();
@@ -59,8 +60,9 @@ const StudentTicketDetails = () => {
 
     const handleDeleteComment = async (commentId) => {
         if (!window.confirm("Are you sure you want to delete this comment?")) return;
+        if (!user) return;
         try {
-            await ticketApi.deleteComment(id, commentId, STUDENT_ID);
+            await ticketApi.deleteComment(id, commentId, user.id);
             fetchTicket();
         } catch (error) {
             alert("Failed to delete comment");
@@ -68,13 +70,9 @@ const StudentTicketDetails = () => {
     };
 
     const handleUpdateComment = async (commentId, content) => {
+        if (!user) return;
         try {
-            await ticketApi.updateComment({ 
-                ticketId: id,
-                commentId: commentId,
-                userId: STUDENT_ID, 
-                content 
-            });
+            await ticketApi.updateComment(id, commentId, user.id, content);
             fetchTicket();
         } catch (err) {
             console.error("Update failed:", err);
@@ -198,7 +196,7 @@ const StudentTicketDetails = () => {
                     <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm space-y-8">
                         <CommentList 
                             comments={ticket.comments || []} 
-                            currentUserId={STUDENT_ID}
+                            currentUserId={user?.id}
                             onDelete={handleDeleteComment}
                             onUpdate={handleUpdateComment}
                         />

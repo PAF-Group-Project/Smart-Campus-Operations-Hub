@@ -16,12 +16,11 @@ import {
     ChevronDown,
     Phone
 } from 'lucide-react';
+import { useAuth } from '../../../context/AuthContext';
 import ticketApi from '../../../api/ticketApi';
 
-const STUDENT_ID = "STU001";
-const STUDENT_NAME = "John Doe";
-
 const StudentCreateTicket = () => {
+    const { user } = useAuth();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [files, setFiles] = useState([]);
@@ -33,9 +32,19 @@ const StudentCreateTicket = () => {
         category: 'MAINTENANCE',
         priority: 'MEDIUM',
         contactDetails: '',
-        reporterId: STUDENT_ID,
-        reporterName: STUDENT_NAME
+        reporterId: user?.id || '',
+        reporterName: user?.name || ''
     });
+
+    React.useEffect(() => {
+        if (user) {
+            setFormData(prev => ({
+                ...prev,
+                reporterId: user.id,
+                reporterName: user.name
+            }));
+        }
+    }, [user]);
 
     const categories = ['MAINTENANCE', 'IT', 'ELECTRICAL', 'PLUMBING', 'SECURITY', 'OTHER'];
     const priorities = ['LOW', 'MEDIUM', 'HIGH', 'URGENT'];

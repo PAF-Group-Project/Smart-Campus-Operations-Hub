@@ -3,6 +3,7 @@ package com.groupxx.smartcampus.ticket;
 import com.groupxx.smartcampus.exception.BusinessRuleException;
 import com.groupxx.smartcampus.exception.ResourceNotFoundException;
 import com.groupxx.smartcampus.ticket.dto.*;
+import com.groupxx.smartcampus.user.User;
 import com.groupxx.smartcampus.ticket.enums.TicketStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -99,6 +100,22 @@ public class TicketService {
         return mapToResponse(ticket);
     }
 
+    public TicketResponseDTO getTicketByIdAndUser(String id, User user) {
+        Ticket ticket = ticketRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
+        
+        // Ownership check
+        boolean isAdmin = user.getRole().name().equals("ADMIN");
+        boolean isReporter = ticket.getReporterId().equals(user.getId());
+        boolean isAssignedTech = ticket.getAssignedTechnicianId() != null && ticket.getAssignedTechnicianId().equals(user.getId());
+        
+        if (!isAdmin && !isReporter && !isAssignedTech) {
+            throw new BusinessRuleException("You do not have permission to view this ticket");
+        }
+        
+        return mapToResponse(ticket);
+    }
+
     public TicketResponseDTO assignTechnician(String id, AdminActionDTO action) {
         Ticket ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
@@ -140,9 +157,14 @@ public class TicketService {
         return mapToResponse(ticketRepository.save(ticket));
     }
 
-    public TicketResponseDTO updateTechnicianStatus(String id, TechnicianUpdateDTO update) {
+    public TicketResponseDTO updateTechnicianStatus(String id, TechnicianUpdateDTO update, String technicianId) {
         Ticket ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
+        
+        // Verify technician is assigned to this ticket
+        if (!technicianId.equals(ticket.getAssignedTechnicianId())) {
+            throw new BusinessRuleException("You can only update status for tickets assigned to you");
+        }
         
         ticket.setStatus(update.getStatus());
         if (update.getResolutionNotes() != null) {

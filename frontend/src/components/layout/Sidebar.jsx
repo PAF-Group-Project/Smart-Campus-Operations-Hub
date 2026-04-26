@@ -1,11 +1,11 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { 
-  BarChart2, 
-  Calendar, 
-  Box, 
-  Ticket, 
-  Bell, 
+import {
+  BarChart2,
+  Calendar,
+  Box,
+  Ticket,
+  Bell,
   Settings,
   Users
 } from 'lucide-react';
@@ -13,11 +13,20 @@ import { useAuth } from '../../context/AuthContext';
 
 const Sidebar = () => {
   const { user } = useAuth();
+  const getTicketPath = () => {
+    switch (user?.role) {
+      case 'ADMIN': return '/admin/tickets';
+      case 'TECHNICIAN': return '/technician/tickets';
+      case 'USER': return '/student/tickets';
+      default: return '/dashboard';
+    }
+  };
+
   const navItems = [
     { name: 'Dashboard', path: '/dashboard', icon: BarChart2 },
     { name: 'Facilities', path: '/facilities', icon: Box },
     { name: 'Bookings', path: '/bookings', icon: Calendar },
-    { name: 'Tickets', path: '/tickets', icon: Ticket },
+    { name: 'Tickets', path: getTicketPath(), icon: Ticket },
     { name: 'Notifications', path: '/notifications', icon: Bell },
     { name: 'Users', path: '/users', icon: Users, role: 'ADMIN' },
   ];
@@ -29,17 +38,16 @@ const Sidebar = () => {
       <div className="p-6 border-b border-slate-200">
         <h1 className="text-xl font-bold text-primary-900">Campus Hub</h1>
       </div>
-      
+
       <nav className="flex-1 p-4 space-y-1">
         {visibleNavItems.map((item) => (
           <NavLink
             key={item.path}
             to={item.path}
-            className={({ isActive }) => 
-              `flex items-center space-x-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                isActive 
-                  ? 'bg-primary-50 text-primary-700' 
-                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+            className={({ isActive }) =>
+              `flex items-center space-x-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${isActive
+                ? 'bg-primary-50 text-primary-700'
+                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
               }`
             }
           >
@@ -53,10 +61,9 @@ const Sidebar = () => {
         <NavLink
           to="/settings/notifications"
           className={({ isActive }) =>
-            `flex items-center space-x-3 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              isActive
-                ? 'bg-primary-50 text-primary-700'
-                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+            `flex items-center space-x-3 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${isActive
+              ? 'bg-primary-50 text-primary-700'
+              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
             }`
           }
         >

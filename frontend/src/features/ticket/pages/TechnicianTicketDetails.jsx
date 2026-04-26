@@ -7,10 +7,10 @@ import StatusTimeline from '../components/StatusTimeline';
 import CommentList from '../components/CommentList';
 import TicketSLAInfo from '../components/TicketSLAInfo';
 
-const TECH_ID = "TECH001";
-const TECH_NAME = "Mike Johnson";
+import { useAuth } from '../../../context/AuthContext';
 
 const TechnicianTicketDetails = () => {
+    const { user } = useAuth();
     const { id } = useParams();
     const navigate = useNavigate();
     const [ticket, setTicket] = useState(null);
@@ -26,8 +26,9 @@ const TechnicianTicketDetails = () => {
     }, [id]);
 
     const fetchTicket = async () => {
+        if (!user) return;
         try {
-            const res = await ticketApi.getTicketById(id, 'TECHNICIAN');
+            const res = await ticketApi.getTicketById(id, user.role);
             setTicket(res.data);
             setResolutionNotes(res.data.resolutionNotes || '');
             setStatus(res.data.status);
@@ -59,13 +60,13 @@ const TechnicianTicketDetails = () => {
 
     const handleAddComment = async (e) => {
         e.preventDefault();
-        if (!newComment.trim()) return;
+        if (!newComment.trim() || !user) return;
         try {
             await ticketApi.addComment(id, {
                 content: newComment,
-                authorId: TECH_ID,
-                authorName: TECH_NAME,
-                authorRole: 'TECHNICIAN'
+                authorId: user.id,
+                authorName: user.name,
+                authorRole: user.role
             });
             setNewComment('');
             fetchTicket();
@@ -75,13 +76,9 @@ const TechnicianTicketDetails = () => {
     };
 
     const handleUpdateComment = async (commentId, content) => {
+        if (!user) return;
         try {
-            await ticketApi.updateComment({ 
-                ticketId: id,
-                commentId: commentId,
-                userId: TECH_ID, 
-                content 
-            });
+            await ticketApi.updateComment(id, commentId, user.id, content);
             fetchTicket();
         } catch (err) {
             console.error("Update failed:", err);
@@ -165,8 +162,8 @@ const TechnicianTicketDetails = () => {
                         <div className="pt-8 border-t border-slate-50">
                             <CommentList 
                                 comments={ticket.comments || []} 
-                                currentUserId={TECH_ID}
-                                onDelete={(cid) => ticketApi.deleteComment(id, cid, TECH_ID).then(fetchTicket)}
+                                currentUserId={user?.id}
+                                onDelete={(cid) => ticketApi.deleteComment(id, cid, user?.id).then(fetchTicket)}
                                 onUpdate={handleUpdateComment}
                             />
                             <form onSubmit={handleAddComment} className="mt-6 flex gap-3">

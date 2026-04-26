@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Briefcase, Clock, ChevronRight, MapPin, AlertCircle } from 'lucide-react';
+import { useAuth } from '../../../context/AuthContext';
 import ticketApi from '../../../api/ticketApi';
 import StatusBadge from '../components/StatusBadge';
 
-const TECH_ID = "TECH001";
-
 const TechnicianWorklist = () => {
+    const { user } = useAuth();
     const [tickets, setTickets] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchAssigned = async () => {
+            if (!user) return;
             try {
-                const res = await ticketApi.getTechnicianTickets(TECH_ID);
+                const res = await ticketApi.getTechnicianTickets();
                 setTickets(res.data);
             } catch (err) {
                 console.error(err);
@@ -22,7 +23,7 @@ const TechnicianWorklist = () => {
             }
         };
         fetchAssigned();
-    }, []);
+    }, [user]);
 
     return (
         <div className="p-6 max-w-5xl mx-auto space-y-6 font-sans">
