@@ -35,7 +35,7 @@ const TicketRedirect = () => {
   switch (user.role) {
     case 'ADMIN': return <Navigate to="/admin/tickets" replace />;
     case 'TECHNICIAN': return <Navigate to="/technician/tickets" replace />;
-    case 'USER': return <Navigate to="/student/tickets" replace />;
+    case 'USER': return <Navigate to="/student/tickets/new" replace />;
     default: return <Navigate to="/dashboard" replace />;
   }
 };

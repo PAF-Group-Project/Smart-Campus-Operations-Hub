@@ -17,7 +17,7 @@ const Sidebar = () => {
     switch (user?.role) {
       case 'ADMIN': return '/admin/tickets';
       case 'TECHNICIAN': return '/technician/tickets';
-      case 'USER': return '/student/tickets';
+      case 'USER': return '/student/tickets/new';
       default: return '/dashboard';
     }
   };
