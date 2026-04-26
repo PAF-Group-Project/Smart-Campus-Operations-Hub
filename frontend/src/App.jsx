@@ -27,6 +27,19 @@ import TechnicianTicketDetails from './features/ticket/pages/TechnicianTicketDet
 // Placeholder Pages
 const Bookings = () => <div className="p-6 bg-white rounded-xl shadow-sm border border-slate-100">Bookings Placeholder</div>;
 
+// Role-based Redirect for Root
+const RootRedirect = () => {
+  const { user } = useAuth();
+  if (!user) return <Navigate to="/login" replace />;
+  
+  switch (user.role) {
+    case 'ADMIN': return <Navigate to="/dashboard" replace />;
+    case 'TECHNICIAN': return <Navigate to="/technician/tickets" replace />;
+    case 'USER': return <Navigate to="/dashboard" replace />;
+    default: return <Navigate to="/dashboard" replace />;
+  }
+};
+
 // Role-based Redirect for Tickets
 const TicketRedirect = () => {
   const { user } = useAuth();
@@ -134,7 +147,7 @@ function App() {
 
                     <Route path="tickets" element={<TicketRedirect />} />
                     <Route path="bookings" element={<Bookings />} />
-                    <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                    <Route path="/" element={<RootRedirect />} />
                   </Routes>
                 </DashboardLayout>
               </ProtectedRoute>

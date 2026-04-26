@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { User, LogOut, Search } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import NotificationBell from '../ui/NotificationBell';
@@ -8,15 +9,23 @@ const Navbar = () => {
 
   return (
     <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8">
-      <div className="relative w-96">
-        <span className="absolute inset-y-0 left-3 flex items-center text-slate-400">
-          <Search size={18} />
-        </span>
-        <input 
-          type="text" 
-          placeholder="Search for something..." 
-          className="w-full bg-slate-100 border-none rounded-full py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary-500 transition-all outline-none"
-        />
+      <div className="flex items-center gap-8">
+        {user?.role === 'TECHNICIAN' && (
+          <Link to="/technician/tickets" className="hover:opacity-80 transition-opacity">
+            <h1 className="text-xl font-bold text-primary-900">Campus Hub</h1>
+          </Link>
+        )}
+        
+        <div className="relative w-96 hidden md:block">
+          <span className="absolute inset-y-0 left-3 flex items-center text-slate-400">
+            <Search size={18} />
+          </span>
+          <input 
+            type="text" 
+            placeholder="Search for something..." 
+            className="w-full bg-slate-100 border-none rounded-full py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary-500 transition-all outline-none"
+          />
+        </div>
       </div>
 
       <div className="flex items-center space-x-6">
