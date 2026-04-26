@@ -4,13 +4,12 @@ const TICKET_BASE = '/tickets';
 
 const ticketApi = {
     createTicket: async (ticketData, files) => {
-        if (!files || files.length === 0) {
-            return api.post(TICKET_BASE, ticketData);
-        }
-
         const formData = new FormData();
         formData.append('ticket', new Blob([JSON.stringify(ticketData)], { type: 'application/json' }));
-        files.forEach(file => formData.append('attachments', file));
+        
+        if (files && files.length > 0) {
+            files.forEach(file => formData.append('attachments', file));
+        }
         
         return api.post(TICKET_BASE, formData);
     },

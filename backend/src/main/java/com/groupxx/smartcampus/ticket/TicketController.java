@@ -4,6 +4,7 @@ import com.groupxx.smartcampus.ticket.dto.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,6 +21,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 @RestController
 @RequestMapping("/api/v1/tickets")
 @RequiredArgsConstructor
+@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:3000"})
 public class TicketController {
 
     private final TicketService ticketService;
@@ -30,20 +32,7 @@ public class TicketController {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
-    @PostMapping(consumes = {"multipart/form-data"})
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<ApiResponse<TicketResponseDTO>> createTicket(
-            @RequestPart("ticket") @Valid TicketRequestDTO ticketRequest,
-            @RequestPart(value = "attachments", required = false) List<MultipartFile> attachments,
-            Authentication authentication) {
-        User user = getAuthenticatedUser(authentication);
-        ticketRequest.setReporterId(user.getId());
-        ticketRequest.setReporterName(user.getName());
-        TicketResponseDTO created = ticketService.createTicket(ticketRequest, attachments);
-        return new ResponseEntity<>(ApiResponse.success(created, "Ticket created successfully"), HttpStatus.CREATED);
-    }
-
-    @PostMapping(consumes = {"application/json"})
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<ApiResponse<TicketResponseDTO>> createTicketJson(
             @RequestBody @Valid TicketRequestDTO ticketRequest,
@@ -52,6 +41,19 @@ public class TicketController {
         ticketRequest.setReporterId(user.getId());
         ticketRequest.setReporterName(user.getName());
         TicketResponseDTO created = ticketService.createTicket(ticketRequest, null);
+        return new ResponseEntity<>(ApiResponse.success(created, "Ticket created successfully"), HttpStatus.CREATED);
+    }
+
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    public ResponseEntity<ApiResponse<TicketResponseDTO>> createTicketMultipart(
+            @RequestPart("ticket") @Valid TicketRequestDTO ticketRequest,
+            @RequestPart(value = "attachments", required = false) List<MultipartFile> attachments,
+            Authentication authentication) {
+        User user = getAuthenticatedUser(authentication);
+        ticketRequest.setReporterId(user.getId());
+        ticketRequest.setReporterName(user.getName());
+         TicketResponseDTO created = ticketService.createTicket(ticketRequest, attachments);
         return new ResponseEntity<>(ApiResponse.success(created, "Ticket created successfully"), HttpStatus.CREATED);
     }
 
@@ -96,21 +98,21 @@ public class TicketController {
         return ResponseEntity.ok(ApiResponse.success(ticketService.getTicketByIdAndUser(id, user), "Ticket fetched successfully"));
     }
 
-    @PatchMapping("/{id}/assign")
+    @PatchMapping(value = "/{id}/assign", consumes = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<TicketResponseDTO>> assignTechnician(
             @PathVariable String id, @RequestBody AdminActionDTO action) {
         return ResponseEntity.ok(ApiResponse.success(ticketService.assignTechnician(id, action), "Technician assigned"));
     }
 
-    @PatchMapping("/{id}/reject")
+    @PatchMapping(value = "/{id}/reject", consumes = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<TicketResponseDTO>> rejectTicket(
             @PathVariable String id, @RequestBody AdminActionDTO action) {
         return ResponseEntity.ok(ApiResponse.success(ticketService.rejectTicket(id, action), "Ticket rejected"));
     }
 
-    @PatchMapping("/{id}/status")
+    @PatchMapping(value = "/{id}/status", consumes = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('TECHNICIAN')")
     public ResponseEntity<ApiResponse<TicketResponseDTO>> updateStatus(
             @PathVariable String id, @RequestBody TechnicianUpdateDTO update, Authentication authentication) {
@@ -118,7 +120,7 @@ public class TicketController {
         return ResponseEntity.ok(ApiResponse.success(ticketService.updateTechnicianStatus(id, update, user.getId()), "Status updated"));
     }
 
-    @PostMapping("/{id}/comments")
+    @PostMapping(value = "/{id}/comments", consumes = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<TicketResponseDTO>> addComment(
             @PathVariable String id, @RequestBody @Valid CommentRequestDTO commentRequest, Authentication authentication) {
@@ -140,7 +142,7 @@ public class TicketController {
         return ResponseEntity.ok(ApiResponse.success(null, "Comment deleted"));
     }
 
-    @PatchMapping("/{ticketId}/comments/{commentId}")
+    @PatchMapping(value = "/{ticketId}/comments/{commentId}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<TicketResponseDTO>> updateComment(
             @PathVariable String ticketId,
