@@ -31,7 +31,7 @@ public class TicketController {
     }
 
     @PostMapping(consumes = {"multipart/form-data"})
-    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<ApiResponse<TicketResponseDTO>> createTicket(
             @RequestPart("ticket") @Valid TicketRequestDTO ticketRequest,
             @RequestPart(value = "attachments", required = false) List<MultipartFile> attachments,
@@ -43,34 +43,46 @@ public class TicketController {
         return new ResponseEntity<>(ApiResponse.success(created, "Ticket created successfully"), HttpStatus.CREATED);
     }
 
+    @PostMapping(consumes = {"application/json"})
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    public ResponseEntity<ApiResponse<TicketResponseDTO>> createTicketJson(
+            @RequestBody @Valid TicketRequestDTO ticketRequest,
+            Authentication authentication) {
+        User user = getAuthenticatedUser(authentication);
+        ticketRequest.setReporterId(user.getId());
+        ticketRequest.setReporterName(user.getName());
+        TicketResponseDTO created = ticketService.createTicket(ticketRequest, null);
+        return new ResponseEntity<>(ApiResponse.success(created, "Ticket created successfully"), HttpStatus.CREATED);
+    }
+
     @GetMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<List<TicketResponseDTO>>> getAllTickets() {
         return ResponseEntity.ok(ApiResponse.success(ticketService.getAllTickets(), "All tickets fetched"));
     }
 
     @GetMapping("/my")
-    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<ApiResponse<List<TicketResponseDTO>>> getMyTickets(Authentication authentication) {
         User user = getAuthenticatedUser(authentication);
         return ResponseEntity.ok(ApiResponse.success(ticketService.getTicketsByStudent(user.getId()), "Your tickets fetched"));
     }
 
     @GetMapping("/assigned")
-    @PreAuthorize("hasAuthority('TECHNICIAN')")
+    @PreAuthorize("hasRole('TECHNICIAN')")
     public ResponseEntity<ApiResponse<List<TicketResponseDTO>>> getAssignedTickets(Authentication authentication) {
         User user = getAuthenticatedUser(authentication);
         return ResponseEntity.ok(ApiResponse.success(ticketService.getTicketsByTechnician(user.getId()), "Assigned tickets fetched"));
     }
 
     @GetMapping("/student/{studentId}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<List<TicketResponseDTO>>> getStudentTickets(@PathVariable String studentId) {
         return ResponseEntity.ok(ApiResponse.success(ticketService.getTicketsByStudent(studentId), "Student tickets fetched"));
     }
 
     @GetMapping("/technician/{technicianId}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<List<TicketResponseDTO>>> getTechnicianTickets(@PathVariable String technicianId) {
         return ResponseEntity.ok(ApiResponse.success(ticketService.getTicketsByTechnician(technicianId), "Technician tickets fetched"));
     }
@@ -85,21 +97,21 @@ public class TicketController {
     }
 
     @PatchMapping("/{id}/assign")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<TicketResponseDTO>> assignTechnician(
             @PathVariable String id, @RequestBody AdminActionDTO action) {
         return ResponseEntity.ok(ApiResponse.success(ticketService.assignTechnician(id, action), "Technician assigned"));
     }
 
     @PatchMapping("/{id}/reject")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<TicketResponseDTO>> rejectTicket(
             @PathVariable String id, @RequestBody AdminActionDTO action) {
         return ResponseEntity.ok(ApiResponse.success(ticketService.rejectTicket(id, action), "Ticket rejected"));
     }
 
     @PatchMapping("/{id}/status")
-    @PreAuthorize("hasAuthority('TECHNICIAN')")
+    @PreAuthorize("hasRole('TECHNICIAN')")
     public ResponseEntity<ApiResponse<TicketResponseDTO>> updateStatus(
             @PathVariable String id, @RequestBody TechnicianUpdateDTO update, Authentication authentication) {
         User user = getAuthenticatedUser(authentication);

@@ -4,14 +4,15 @@ const TICKET_BASE = '/tickets';
 
 const ticketApi = {
     createTicket: async (ticketData, files) => {
+        if (!files || files.length === 0) {
+            return api.post(TICKET_BASE, ticketData);
+        }
+
         const formData = new FormData();
         formData.append('ticket', new Blob([JSON.stringify(ticketData)], { type: 'application/json' }));
-        if (files) {
-            files.forEach(file => formData.append('attachments', file));
-        }
-        return api.post(TICKET_BASE, formData, {
-            headers: { 'Content-Type': 'multipart/form-data' }
-        });
+        files.forEach(file => formData.append('attachments', file));
+        
+        return api.post(TICKET_BASE, formData);
     },
 
     getAllTickets: () => api.get(TICKET_BASE),
@@ -33,8 +34,8 @@ const ticketApi = {
     deleteComment: (ticketId, commentId) => 
         api.delete(`${TICKET_BASE}/${ticketId}/comments/${commentId}`),
 
-    updateComment: (ticketId, commentId, userId, newContent) => 
-        api.patch(`${TICKET_BASE}/${ticketId}/comments/${commentId}`, { content: newContent, userId })
+    updateComment: (ticketId, commentId, newContent) => 
+        api.patch(`${TICKET_BASE}/${ticketId}/comments/${commentId}`, { content: newContent })
 };
 
 export default ticketApi;

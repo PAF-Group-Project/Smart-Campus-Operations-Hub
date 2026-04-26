@@ -78,7 +78,7 @@ const TechnicianTicketDetails = () => {
     const handleUpdateComment = async (commentId, content) => {
         if (!user) return;
         try {
-            await ticketApi.updateComment(id, commentId, user.id, content);
+            await ticketApi.updateComment(id, commentId, content);
             fetchTicket();
         } catch (err) {
             console.error("Update failed:", err);
