@@ -1,57 +1,48 @@
-<<<<<<< HEAD
+D:\tharani\paf project\backend\src\main\java\com\groupxx\smartcampus\common\ApiResponse.java
+D:\tharani\paf project\backend\src\main\java\com\groupxx\smartcampus\resource\Resource.java
+D:\tharani\paf project\backend\src\main\java\com\groupxx\smartcampus\user\UserController.java
 D:\tharani\paf project\backend\src\main\java\com\smartcampus\booking\dto\ConflictResponseDTO.java
-D:\tharani\paf project\backend\src\main\java\com\smartcampus\booking\controller\ResourceController.java
+D:\tharani\paf project\backend\src\main\java\com\groupxx\smartcampus\user\LoginRequest.java
+D:\tharani\paf project\backend\src\main\java\com\groupxx\smartcampus\user\RegisterRequest.java
 D:\tharani\paf project\backend\src\main\java\com\smartcampus\booking\mapper\BookingMapper.java
-D:\tharani\paf project\backend\src\main\java\com\smartcampus\booking\dto\BookingRequestDTO.java
-D:\tharani\paf project\backend\src\main\java\com\smartcampus\booking\config\CorsConfig.java
-D:\tharani\paf project\backend\src\main\java\com\smartcampus\booking\repository\BookingRepositoryCustom.java
-D:\tharani\paf project\backend\src\main\java\com\smartcampus\booking\config\MongoConfig.java
-D:\tharani\paf project\backend\src\main\java\com\smartcampus\booking\dto\StatusUpdateDTO.java
+D:\tharani\paf project\backend\src\main\java\com\groupxx\smartcampus\notification\dto\NotificationResponse.java
+D:\tharani\paf project\backend\src\main\java\com\groupxx\smartcampus\notification\NotificationRepository.java
+D:\tharani\paf project\backend\src\main\java\com\groupxx\smartcampus\user\UserRepository.java
+D:\tharani\paf project\backend\src\main\java\com\groupxx\smartcampus\user\User.java
+D:\tharani\paf project\backend\src\main\java\com\groupxx\smartcampus\resource\ResourceServiceImpl.java
+D:\tharani\paf project\backend\src\main\java\com\groupxx\smartcampus\notification\dto\TestNotificationRequest.java
 D:\tharani\paf project\backend\src\main\java\com\smartcampus\booking\repository\BookingRepositoryImpl.java
 D:\tharani\paf project\backend\src\main\java\com\smartcampus\booking\exception\UnauthorizedActionException.java
-D:\tharani\paf project\backend\src\main\java\com\smartcampus\booking\domain\Booking.java
+D:\tharani\paf project\backend\src\main\java\com\groupxx\smartcampus\config\CustomOAuth2UserService.java
+D:\tharani\paf project\backend\src\main\java\com\groupxx\smartcampus\config\LocalUserDetailsService.java
+D:\tharani\paf project\backend\src\main\java\com\groupxx\smartcampus\ticket\TicketController.java
 D:\tharani\paf project\backend\src\main\java\com\smartcampus\booking\exception\BookingConflictException.java
-D:\tharani\paf project\backend\src\main\java\com\smartcampus\booking\repository\BookingRepository.java
+D:\tharani\paf project\backend\src\main\java\com\groupxx\smartcampus\exception\ResourceNotFoundException.java
+D:\tharani\paf project\backend\src\main\java\com\groupxx\smartcampus\notification\NotificationType.java
 D:\tharani\paf project\backend\src\main\java\com\smartcampus\booking\exception\BookingNotFoundException.java
-D:\tharani\paf project\backend\src\main\java\com\smartcampus\booking\exception\GlobalExceptionHandler.java
-D:\tharani\paf project\backend\src\main\java\com\smartcampus\booking\BookingApplication.java
-D:\tharani\paf project\backend\src\main\java\com\smartcampus\booking\dto\BookingResponseDTO.java
+D:\tharani\paf project\backend\src\main\java\com\groupxx\smartcampus\resource\ResourceService.java
+D:\tharani\paf project\backend\src\main\java\com\groupxx\smartcampus\booking\Booking.java
+D:\tharani\paf project\backend\src\main\java\com\groupxx\smartcampus\resource\ResourceStatus.java
+D:\tharani\paf project\backend\src\main\java\com\groupxx\smartcampus\notification\NotificationController.java
+D:\tharani\paf project\backend\src\main\java\com\groupxx\smartcampus\SmartCampusApplication.java
 D:\tharani\paf project\backend\src\main\java\com\smartcampus\booking\service\BookingService.java
+D:\tharani\paf project\backend\src\main\java\com\groupxx\smartcampus\ticket\Ticket.java
 D:\tharani\paf project\backend\src\main\java\com\smartcampus\booking\controller\BookingController.java
-=======
-C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\comment\Comment.java
-C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\SmartCampusApplication.java
-C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\user\LoginRequest.java
-C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\resource\ResourceServiceImpl.java
-C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\common\ApiResponse.java
-C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\notification\NotificationController.java
-C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\user\UserRepository.java
-C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\exception\GlobalExceptionHandler.java
-C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\resource\Resource.java
-C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\user\Role.java
-C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\user\DemoUserSeeder.java
-C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\resource\ResourceRepository.java
-C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\notification\dto\NotificationResponse.java
-C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\notification\dto\TestNotificationRequest.java
-C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\notification\NotificationType.java
-C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\resource\ResourceService.java
-C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\user\UserController.java
-C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\resource\ResourceType.java
-C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\config\CustomOAuth2UserService.java
-C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\notification\NotificationRepository.java
-C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\ticket\TicketController.java
-C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\config\LocalUserDetailsService.java
-C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\resource\AvailabilityWindow.java
-C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\user\User.java
-C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\notification\Notification.java
-C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\exception\ResourceNotFoundException.java
-C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\resource\ResourceStatus.java
-C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\ticket\Ticket.java
-C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\booking\Booking.java
-C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\resource\ResourceController.java
-C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\user\RegisterRequest.java
-C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\notification\NotificationService.java
-C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\user\AuthController.java
-C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\booking\BookingController.java
-C:\Users\Asus\Documents\PAF\Smart-Campus-Operations-Hub\backend\src\main\java\com\groupxx\smartcampus\config\SecurityConfig.java
->>>>>>> 3409d4892568add3080ba77dd736f8a4fcc24ef1
+D:\tharani\paf project\backend\src\main\java\com\groupxx\smartcampus\user\Role.java
+D:\tharani\paf project\backend\src\main\java\com\groupxx\smartcampus\notification\NotificationService.java
+D:\tharani\paf project\backend\src\main\java\com\groupxx\smartcampus\resource\ResourceRepository.java
+D:\tharani\paf project\backend\src\main\java\com\groupxx\smartcampus\user\DemoUserSeeder.java
+D:\tharani\paf project\backend\src\main\java\com\smartcampus\booking\dto\BookingRequestDTO.java
+D:\tharani\paf project\backend\src\main\java\com\groupxx\smartcampus\resource\ResourceController.java
+D:\tharani\paf project\backend\src\main\java\com\groupxx\smartcampus\comment\Comment.java
+D:\tharani\paf project\backend\src\main\java\com\groupxx\smartcampus\resource\ResourceType.java
+D:\tharani\paf project\backend\src\main\java\com\groupxx\smartcampus\exception\GlobalExceptionHandler.java
+D:\tharani\paf project\backend\src\main\java\com\smartcampus\booking\repository\BookingRepositoryCustom.java
+D:\tharani\paf project\backend\src\main\java\com\groupxx\smartcampus\resource\AvailabilityWindow.java
+D:\tharani\paf project\backend\src\main\java\com\smartcampus\booking\dto\StatusUpdateDTO.java
+D:\tharani\paf project\backend\src\main\java\com\groupxx\smartcampus\notification\Notification.java
+D:\tharani\paf project\backend\src\main\java\com\smartcampus\booking\domain\Booking.java
+D:\tharani\paf project\backend\src\main\java\com\groupxx\smartcampus\config\SecurityConfig.java
+D:\tharani\paf project\backend\src\main\java\com\smartcampus\booking\repository\BookingRepository.java
+D:\tharani\paf project\backend\src\main\java\com\groupxx\smartcampus\user\AuthController.java
+D:\tharani\paf project\backend\src\main\java\com\smartcampus\booking\dto\BookingResponseDTO.java

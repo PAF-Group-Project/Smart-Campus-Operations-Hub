@@ -46,7 +46,7 @@ public class BookingService {
         if (!conflicts.isEmpty()) {
             List<ConflictResponseDTO.TimeSlot> suggested = suggestAvailableSlots(
                     request.getResourceId(), request.getDate(), request.getStartTime(), request.getEndTime());
-            throw new BookingConflictException(new ConflictResponseDTO("Booking conflict detected for the requested time.", suggested));
+            throw new BookingConflictException("Booking conflict detected for the requested time.");
         }
 
         // 2. Save if no conflict

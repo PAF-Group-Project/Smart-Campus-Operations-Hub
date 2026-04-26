@@ -40,6 +40,7 @@ public class SecurityConfig {
                 .requestMatchers("/", "/error", "/favicon.ico").permitAll()
                 .requestMatchers("/api/v1/auth/me").authenticated()
                 .requestMatchers("/api/v1/auth/**", "/public/**", "/login/**", "/oauth2/**").permitAll()
+                .requestMatchers("/api/bookings/**", "/api/resources/**").permitAll()
                 .anyRequest().authenticated()
             )
             .oauth2Login(oauth2 -> oauth2
@@ -78,9 +79,21 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173")); // Vite dev server
+        configuration.setAllowedOrigins(List.of(
+    "http://localhost:5173", 
+    "http://localhost:5174",
+    "http://localhost:5175"
+)); // Vite dev servers
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token"));
+        configuration.setAllowedHeaders(Arrays.asList(
+            "authorization", 
+            "content-type", 
+            "x-auth-token",
+            "x-user-id",
+            "x-user-email",
+            "x-user-name",
+            "x-user-role"
+        ));
         configuration.setExposedHeaders(List.of("x-auth-token"));
         configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
