@@ -200,10 +200,6 @@ public class TicketService {
         
         ticket.getComments().add(comment);
 
-        if (!"STUDENT".equals(request.getAuthorRole())) {
-            processSLAOnFirstResponse(ticket);
-        }
-
         return mapToResponse(ticketRepository.save(ticket));
     }
 
