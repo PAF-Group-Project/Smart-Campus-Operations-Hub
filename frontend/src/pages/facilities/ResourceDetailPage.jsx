@@ -18,6 +18,13 @@ const TYPE_ICON = {
   LAB: Beaker, LECTURE_HALL: Monitor, MEETING_ROOM: LayoutDashboard, EQUIPMENT: Settings,
 };
 const DAYS_ORDER = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'];
+const DETAIL_IMAGE_FALLBACKS = {
+  '69edc3010b86ed2276216106': '/images/resources/laboratory.jpg',
+  LAB: '/images/resources/laboratory.jpg',
+};
+
+const getDetailImage = (resource, id) =>
+  resource.imageUrl || DETAIL_IMAGE_FALLBACKS[id] || DETAIL_IMAGE_FALLBACKS[resource.type] || '';
 
 export const ResourceDetailPage = () => {
   const { id } = useParams();
@@ -77,6 +84,7 @@ export const ResourceDetailPage = () => {
   if (!resource) return null;
 
   const TypeIcon = TYPE_ICON[resource.type] || Settings;
+  const detailImage = getDetailImage(resource, id);
 
   // Build weekly schedule map
   const scheduleMap = {};
@@ -96,9 +104,9 @@ export const ResourceDetailPage = () => {
 
       {/* Header card */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-6">
-        {resource.imageUrl ? (
+        {detailImage ? (
           <div className="h-56 w-full overflow-hidden">
-            <img src={resource.imageUrl} alt={resource.name} className="w-full h-full object-cover" />
+            <img src={detailImage} alt={resource.name} className="w-full h-full object-cover" />
           </div>
         ) : (
           <div className="h-40 flex items-center justify-center"

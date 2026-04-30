@@ -1,0 +1,10 @@
+{
+  "name": "smart-campus-backend",
+  "private": true,
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "mvnw.cmd spring-boot:run",
+    "build": "mvnw.cmd -q -DskipTests compile",
+    "test": "mvnw.cmd test"
+  }
+}

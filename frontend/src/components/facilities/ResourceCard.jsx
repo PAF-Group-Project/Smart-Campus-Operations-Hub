@@ -15,6 +15,40 @@ const STATUS_CONFIG = {
   OUT_OF_SERVICE:    { label: 'Out of Service',    color: 'bg-red-100 text-red-700',      icon: AlertTriangle },
 };
 
+const RESOURCE_IMAGE_FALLBACKS = {
+  LAB: '/images/resources/laboratory.jpg',
+  LECTURE_HALL: '/images/resources/campus-building.jpg',
+  MEETING_ROOM: '/images/resources/campus-building.jpg',
+  EQUIPMENT: '/images/resources/fitness-center.jpg',
+  SPORTS: '/images/resources/sports-hall.jpg',
+};
+
+const getResourceImage = (resource) => {
+  if (resource.imageUrl) return resource.imageUrl;
+
+  const searchText = [
+    resource.name,
+    resource.type,
+    resource.description,
+    resource.building,
+    resource.location,
+  ].filter(Boolean).join(' ').toLowerCase();
+
+  if (/(lab|laboratory|microscope|science|medical|research)/.test(searchText)) {
+    return RESOURCE_IMAGE_FALLBACKS.LAB;
+  }
+
+  if (/(gym|fitness|treadmill|workout|exercise|equipment)/.test(searchText)) {
+    return RESOURCE_IMAGE_FALLBACKS.EQUIPMENT;
+  }
+
+  if (/(sport|arena|court|stadium|indoor)/.test(searchText)) {
+    return RESOURCE_IMAGE_FALLBACKS.SPORTS;
+  }
+
+  return RESOURCE_IMAGE_FALLBACKS[resource.type] || RESOURCE_IMAGE_FALLBACKS.MEETING_ROOM;
+};
+
 export const TypeBadge = ({ type }) => {
   const cfg = TYPE_CONFIG[type] || { label: type, color: 'bg-gray-100 text-gray-700', icon: Settings };
   const Icon = cfg.icon;
@@ -43,13 +77,14 @@ export const ResourceCard = ({ resource }) => {
   const amenities = resource.amenities || [];
   const visibleAmenities = amenities.slice(0, 3);
   const extraCount = amenities.length - 3;
+  const resourceImage = getResourceImage(resource);
 
   return (
     <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-lg hover:scale-[1.02] transition-all duration-300 group flex flex-col">
-      {resource.imageUrl ? (
+      {resourceImage ? (
         <div className="h-44 overflow-hidden relative flex-shrink-0">
           <img
-            src={resource.imageUrl}
+            src={resourceImage}
             alt={resource.name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
