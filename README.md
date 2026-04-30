@@ -1,92 +1,209 @@
-# Smart Campus Operations Hub---
+# Smart Campus Operations Hub
 
-Welcome to the Smart Campus Operations Hub repository! This project features a robust **Spring Boot REST API backend** and a scalable **React + Vite frontend** to power campus facility and asset management.
+Smart Campus Operations Hub is a full-stack campus operations system with a **Spring Boot REST API backend** and a **React + Vite frontend**. It supports campus resources, bookings, maintenance tickets, notifications, authentication, and role-based access.
+
+## Tech Stack
+
+- Backend: Spring Boot 3, Java 17, Spring Security, Spring Data MongoDB
+- Frontend: React, Vite, Tailwind CSS, React Router, Axios
+- Database: MongoDB Atlas
+- Auth: Email/password and Google OAuth
 
 ## Project Structure
 
-The project encompasses two primary directories:
-
-### Backend
-A Spring Boot 3 application using:
-- **Spring Data MongoDB** for robust document storage (Connection string configured for MongoDB Atlas).
-- **Bean Validation** to ensure model constraints explicitly via `jakarta.validation` annotations.
-- Standard **Model -> Repository -> Service -> Controller** layered architecture.
-- Core endpoints located at `/api/v1/resources` supporting CRUD workflows with granular filtering.
-
-#### Setup Instructions (Backend)
-1. Ensure Java 17 and Maven are installed locally.
-2. Navigate to the `backend/` directory.
-3. Your database connection defaults to the configured MongoDB URI placeholder in `backend/src/main/resources/application.yml`. 
-4. Run the application:
-   ```bash
-   mvn spring-boot:run
-   ```
-   > The server will start on default port `8080`.
-
-### Frontend
-A Vite + React application styled elegantly with:
-- **TailwindCSS** for responsive and highly customized utility designs.
-- Built-in layouts (`DashboardLayout`, `Sidebar`) and shared UI components (`Badge`, `Modal`, `Button`, `EmptyState`, `LoadingSpinner`).
-- Componentized architecture that is highly reactive and cleanly maps out Data API's onto local states utilizing `Axios` in `src/services`.
-
-#### Setup Instructions (Frontend)
-1. Ensure Node.js 18+ is installed globally.
-2. Navigate to the `frontend/` directory.
-3. Install the dependencies:
-   ```bash
-   npm install
-   ```
-4. Start the interactive development server:
-   ```bash
-   npm run dev
-   ```
-   > The local development server will start on `http://localhost:5173/`. 
-   > Port settings in the backend `@CrossOrigin` config support both `3000` and `5173`.
-
-
-## Repository Layout
-
 ```text
-/backend          - Spring Boot 3.2+ (Java 17)
-  /src/main/java/com/groupxx/smartcampus
-    /config       - Shared configurations (Security, Mongo, OAuth2)
-    /common       - Standard API responses & constants
-    /exception    - Global exception handling
-    /security     - Auth logic starters
-    /resource     - Facility & Asset Module (Member 1)
-    /booking      - Booking Module (Member 2)
-    /ticket       - Incident/Maintenance Module (Member 3)
-    /notification - Notification & Auth Module (Member 4)
-
-/frontend         - React (Vite) + Tailwind CSS
-  /src
-    /api          - Shared Axios instance
-    /components   - Shared UI & Layout components
-    /features     - Module-specific features (Auth, Bookings, etc.)
-    /pages        - View-level components
-    /routes       - Application routing
+backend/     Spring Boot backend API
+frontend/    React + Vite frontend
 ```
 
-## Member 1 Module Scope (Facilities & Assets Catalogue)
+## Prerequisites
 
-- Maintain a catalogue of bookable resources: lecture halls, labs, meeting rooms, and equipment (projectors, cameras, etc.).
-- Track key metadata for each resource, including type, capacity, location, availability windows, and status (e.g., `ACTIVE`, `OUT_OF_SERVICE`).
-- Support search and filtering by resource attributes such as type, capacity, and location.
+Install these before running the project:
 
-## Getting Started
+- Java 17 or newer
+- Node.js 18 or newer
+- npm
+- Internet connection for MongoDB Atlas and dependency downloads
 
-### Backend
-1. Ensure Java 17+ and Maven are installed.
-2. Update `backend/src/main/resources/application.yml` with your MongoDB URI and Google OAuth credentials.
-3. Run: `mvn spring-boot:run`
+Maven does not need to be installed globally because the backend includes Maven wrapper files.
 
-### Frontend
-1. Navigate to `/frontend`.
-2. Run: `npm install`
-3. Run: `npm run dev`
+## Backend Setup
 
-## Team Collaboration Rules
-- **Modules**: Each member must work exclusively within their assigned package/folder.
-- **Shared Code**: Changes to `common`, `config`, or `components/ui` should be discussed before pushing.
-- **Naming**: Use camelCase for methods/variables and PascalCase for Classes/Components.
-- **CI/CD**: Ensure every PR passes the GitHub Actions build before merging.
+Open a terminal from the project root:
+
+```powershell
+cd backend
+```
+
+Run the backend:
+
+```powershell
+.\mvnw.cmd spring-boot:run
+```
+
+The backend starts at:
+
+```text
+http://localhost:8080
+```
+
+API base path:
+
+```text
+http://localhost:8080/api/v1
+```
+
+To compile without running tests:
+
+```powershell
+.\mvnw.cmd -q -DskipTests compile
+```
+
+## Frontend Setup
+
+Open a second terminal from the project root:
+
+```powershell
+cd frontend
+```
+
+Install dependencies:
+
+```powershell
+npm install
+```
+
+Run the frontend:
+
+```powershell
+npm run dev
+```
+
+The frontend starts at:
+
+```text
+http://localhost:5173
+```
+
+Build the frontend:
+
+```powershell
+npm run build
+```
+
+## Running the Full Project
+
+Use two terminals:
+
+Terminal 1:
+
+```powershell
+cd backend
+.\mvnw.cmd spring-boot:run
+```
+
+Terminal 2:
+
+```powershell
+cd frontend
+npm run dev
+```
+
+Then open:
+
+```text
+http://localhost:5173
+```
+
+## Environment Notes
+
+Backend configuration is in:
+
+```text
+backend/src/main/resources/application.yml
+```
+
+Important backend settings:
+
+- Server port: `8080`
+- MongoDB URI: configured under `spring.data.mongodb.uri`
+- Google OAuth variables:
+  - `GOOGLE_CLIENT_ID`
+  - `GOOGLE_CLIENT_SECRET`
+
+If needed, set Google OAuth credentials as environment variables instead of hardcoding them.
+
+## Default Routes
+
+Frontend:
+
+```text
+/login
+/dashboard
+/resources
+/notifications
+/settings/notifications
+/users
+```
+
+Role-specific ticket routes:
+
+```text
+/student/tickets
+/admin/tickets
+/technician/tickets
+```
+
+## Common Issues
+
+### npm ENOENT in backend
+
+The backend is a Spring Boot/Maven app, not a normal Node backend. Use:
+
+```powershell
+cd backend
+.\mvnw.cmd spring-boot:run
+```
+
+Use npm only inside the `frontend` folder.
+
+### Frontend cannot call backend
+
+Make sure the backend is running on:
+
+```text
+http://localhost:8080
+```
+
+The Vite dev server proxies `/api` requests to the backend.
+
+### Port already in use
+
+Run the frontend on another port:
+
+```powershell
+npm run dev -- --port 5188
+```
+
+## Main Modules
+
+- Dashboard overview
+- Resource browsing and management
+- Booking workflows
+- Maintenance and incident tickets
+- Notifications and notification preferences
+- User management with role-based access
+
+## Build Check
+
+Before submission or demo:
+
+```powershell
+cd backend
+.\mvnw.cmd -q -DskipTests compile
+```
+
+```powershell
+cd frontend
+npm run build
+```
